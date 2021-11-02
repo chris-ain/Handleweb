@@ -8,7 +8,6 @@ export function projekte (smoothScroll){
 	let d = document;
     let anchor1Link  = d.getElementById('anchor1Link');
     let anchor1 = d.getElementById('anchor1');
-    gsap.set (".canvas_proj",{opacity:0});
 
     function lerp(start, end, amt) {
         return (1 - amt) * start + amt * end * 0.5;
@@ -52,31 +51,31 @@ export function projekte (smoothScroll){
         scrollEffect = lerp(scrollEffect, delta.y, 0.5);
     }
 
-    }).onError(() => {
-        // we will add a class to the document body to display original images
-        document.body.classList.add("no-curtains", "planes-loaded");
-    
-    }).onContextLost(() => {
-        // on context lost, try to restore the context
-        curtainsProj.restoreContext();
+}).onError(() => {
+    // we will add a class to the document body to display original images
+    document.body.classList.add("no-curtains", "planes-loaded");
+  
+}).onContextLost(() => {
+    // on context lost, try to restore the context
+    curtainsProj.restoreContext();
+});
+
+function updateScroll(xOffset, yOffset) {
+    // update our scroll manager values
+    curtainsProj.updateScrollValues(xOffset, yOffset);
+}
+
+// custom scroll event
+if(!useNativeScroll) {
+    // we'll render only while lerping the scroll
+    curtainsProj.disableDrawing();
+    smoothScroll.on('scroll', (obj) => {
+        updateScroll(obj.scroll.x, obj.scroll.y);
+
+        // render scene
+        curtainsProj.needRender();
     });
-
-    function updateScroll(xOffset, yOffset) {
-        // update our scroll manager values
-        curtainsProj.updateScrollValues(xOffset, yOffset);
-    }
-
-    // custom scroll event
-    if(!useNativeScroll) {
-        // we'll render only while lerping the scroll
-        curtainsProj.disableDrawing();
-        smoothScroll.on('scroll', (obj) => {
-            updateScroll(obj.scroll.x, obj.scroll.y);
-
-            // render scene
-            curtainsProj.needRender();
-        });
-    }
+}
 
     ///// SMOOTH SCROLL END////
 
@@ -246,15 +245,21 @@ export function projekte (smoothScroll){
                     duration: 1.65,
                     ease: "power4.inOut"
                 });
-                gsap.to(".canvas_proj", {
+
+                gsap.to(".canvas_projekte_under", {
+                    opacity: 0,
+                    duration: 0,
+                    ease: "power4.inOut"
+                });
+                
+                gsap.to("canvas_proj", {
                     opacity: 1,
                     duration: 0.1,
                     ease: "power4.inOut"
                 });
 
-                
-
-                
+              
+              
               
                 
 
@@ -271,7 +276,7 @@ export function projekte (smoothScroll){
                     curtainBoundingRect.height / planeBoundingRect.height
                 ));
 
-                plane.setRelativeTranslation(new Vec3(4
+                plane.setRelativeTranslation(new Vec3(
                     -1 * planeBoundingRect.left / curtainsProj.pixelRatio,
                     -1 * planeBoundingRect.top / curtainsProj.pixelRatio,
                     0
@@ -303,7 +308,6 @@ export function projekte (smoothScroll){
     galleryState.closeButtonEl.addEventListener("click", () => {
         const fullScreenPlane = curtainsProj.planes.find(plane => plane.userData.isFullscreen);
 
-        // smoothScroll.start();
 
         // if there's a plane actually displayed fullscreen, we'll be shrinking it back to normal
         if(fullScreenPlane && galleryState.fullscreenThumb) {
@@ -386,7 +390,7 @@ export function projekte (smoothScroll){
     },2000);
 
     function onPlaneClick(event, plane) {
-        canvasclick = document.getElementById("canvas_projekte_under"); // close button element
+        canvasclick = document.getElementById("canvas_proj"); // close button element
         smoothScroll.stop();
         smoothScroll.destroy();
 
@@ -489,9 +493,14 @@ export function projekte (smoothScroll){
                 }
             });
             plane.setTransformOrigin(newTranslation);
-                       
+            
+ 
+            
+            
         }
     }
+
+
 
 
     /*** POST PROCESSING ***/

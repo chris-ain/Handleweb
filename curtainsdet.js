@@ -262,11 +262,7 @@ if(!useNativeScroll) {
                     duration: 1.65,
                     ease: "power4.inOut"
                 });
-                gsap.to(".canvas_proj", {
-                    opacity: 1,
-                    duration: 0.2,
-                    ease: "power4.inOut"
-                });
+             
 
                 document.body.style.overflow ="hidden";
               

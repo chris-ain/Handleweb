@@ -1,26 +1,5 @@
 export var curtains;
 
-var imagesLoaded = 0;
-
-
-$(document).ready(function () {
-  // When we begin, assume no images are loaded.
-  // Count the total number of images on the page when the page has loaded.
-  var totalImages = $("img").length
-
-  // After an image is loaded, add to the count, and if that count equals the
-  // total number of images, fire the allImagesLoaded() function.
-  $("img").on("load", function (event) {
-    imagesLoaded++
-    if (imagesLoaded == totalImages) {
-      allImagesLoaded()
-    }
-  })
-
-  function allImagesLoaded() {
-    console.log("ALL IMAGES LOADED")
-  }
-})
 
 
 
