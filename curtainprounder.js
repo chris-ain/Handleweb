@@ -1,31 +1,31 @@
-export var curtains;
-
-var imagesLoaded = 0;
+export var curtainsprounder;
 
 
-$(document).ready(function () {
-  // When we begin, assume no images are loaded.
-  // Count the total number of images on the page when the page has loaded.
-  var totalImages = $("img").length
 
-  // After an image is loaded, add to the count, and if that count equals the
-  // total number of images, fire the allImagesLoaded() function.
-  $("img").on("load", function (event) {
-    imagesLoaded++
-    if (imagesLoaded == totalImages) {
+export function curtainsproundermain (smoothScroll) {
+
+  var imagesLoaded = 0;
+
+
+  $(document).ready(function () {
+      // When we begin, assume no images are loaded.
+      // Count the total number of images on the page when the page has loaded.
+      var totalImages = $("img").length
+    
+      // After an image is loaded, add to the count, and if that count equals the
+      // total number of images, fire the allImagesLoaded() function.
+      $("img").on("load", function (event) {
+        imagesLoaded++
+        if (imagesLoaded == totalImages) {
+          allImagesLoaded()
+        }
+      })
+    
+      function allImagesLoaded() {
+        console.log("ALL IMAGES LOADED")
+      }
       allImagesLoaded()
-    }
-  })
-
-  function allImagesLoaded() {
-    console.log("ALL IMAGES LOADED")
-  }
-})
-
-
-
-export function curtainsmain (smoothScroll) {
-
+    })
 
     function lerp(start, end, amt) {
         return (1 - amt) * start + amt * end * 0.5;
@@ -41,16 +41,16 @@ export function curtainsmain (smoothScroll) {
     let useNativeScroll;
 
 
-    const curtains_infunction = new Curtains({
-      container: "canvas",
-      watchScroll: useNativeScroll, // watch scroll on mobile not on desktop since we're using locomotive scroll
+    const curtainsprounder = new Curtains({
+        container: document.getElementById("canvas_projekte_under"),
+        watchScroll: useNativeScroll, // watch scroll on mobile not on desktop since we're using locomotive scroll
       pixelRatio: Math.min(1.5, window.devicePixelRatio), // limit pixel ratio for performance
     });
 
     
 
 
-    curtains_infunction
+    curtainsprounder
       .onRender(() => {
         if (useNativeScroll) {
           // update our planes deformation
@@ -61,7 +61,7 @@ export function curtainsmain (smoothScroll) {
       })
       .onScroll(() => {
         // get scroll deltas to apply the effect on scroll
-        const delta = curtains_infunction.getScrollDeltas();
+        const delta = curtainsprounder.getScrollDeltas();
 
         // invert value for the effect
         delta.y = -delta.y;
@@ -86,23 +86,23 @@ export function curtainsmain (smoothScroll) {
       })
       .onContextLost(() => {
         // on context lost, try to restore the context
-        curtains_infunction.restoreContext();
+        curtainsprounder.restoreContext();
       });
 
     function updateScroll(xOffset, yOffset) {
       // update our scroll manager values
-      curtains_infunction.updateScrollValues(xOffset, yOffset);
+      curtainsprounder.updateScrollValues(xOffset, yOffset);
     }
 
     // custom scroll event
     if (!useNativeScroll) {
       // we'll render only while lerping the scroll
-      curtains_infunction.disableDrawing();
+      curtainsprounder.disableDrawing();
       smoothScroll.on("scroll", (obj) => {
         updateScroll(obj.scroll.x, obj.scroll.y);
 
         // render scene
-        curtains_infunction.needRender();
+        curtainsprounder.needRender();
       });
     }
 
@@ -133,7 +133,7 @@ export function curtainsmain (smoothScroll) {
       vec3 vertexPosition = aVertexPosition;
 
       // cool effect on scroll
-      vertexPosition.y += sin(((vertexPosition.y * vertexPosition.x + 5.0) / 2.0) * 3.141592) * (sin(uPlaneDeformation / 100.0))/1.3;
+      vertexPosition.y += sin(((vertexPosition.x + 1.0) / 2.0) * 3.141592) * (sin(uPlaneDeformation / 100.0));
 
       gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition, 1.0);
 
@@ -163,6 +163,7 @@ export function curtainsmain (smoothScroll) {
       shareProgram: true, // share planes program to improve plane creation speed
       widthSegments: 10,
       heightSegments: 10,
+      autoloadSources: true,
       drawCheckMargins: {
         top: 100,
         right: 0,
@@ -180,7 +181,7 @@ export function curtainsmain (smoothScroll) {
 
     // add our planes and handle them
     for (let i = 0; i < planeElements.length; i++) {
-      const plane = new Plane(curtains_infunction, planeElements[i], params);
+      const plane = new Plane(curtainsprounder, planeElements[i], params);
 
       planes.push(plane);
 
@@ -230,21 +231,21 @@ export function curtainsmain (smoothScroll) {
       vec2 textureCoords = vTextureCoord;
 
       vec2 redTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 400.0);
-      vec2 greenTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 4000.0);
-      vec2 blueTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 4000.0);
+      vec2 greenTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 3000.0);
+      vec2 blueTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 3000.0);
 
       vec4 red = texture2D(uRenderTexture, redTextCoords);
       vec4 green = texture2D(uRenderTexture, greenTextCoords);
       vec4 blue = texture2D(uRenderTexture, blueTextCoords);
 
-      vec4 finalColor = vec4(red.r, green.g, blue.b, min(1.0, red.a * green.a*blue.a));
+      vec4 finalColor = vec4(red.r, green.g, blue.b, min(1.0, red.a * blue.a * green.a));
       gl_FragColor = finalColor;
   }
 `;
 
-    var rgbTarget = new RenderTarget(curtains_infunction);
+    var rgbTarget = new RenderTarget(curtainsprounder);
 
-    var rgbPass = new ShaderPass(curtains_infunction, {
+    var rgbPass = new ShaderPass(curtainsprounder, {
       fragmentShader: rgbFs,
       renderTarget: rgbTarget,
       depthTest: false, // we need to disable the depth test to display that shader pass on top of the first one

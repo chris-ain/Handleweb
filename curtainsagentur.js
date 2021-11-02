@@ -1,8 +1,8 @@
 export var curtainsAg;
-
-
-
+export var pl = [];
 export function curtainsgenturfunc (smoothScroll) {
+
+
 
     function lerp(start, end, amt) {
         return (1 - amt) * start + amt * end * 0.5;
@@ -16,7 +16,7 @@ export function curtainsgenturfunc (smoothScroll) {
     let scrollEffect = 0;
     var planesDeformations = 0;
     let useNativeScroll;
-
+pl = planes;
 
     const curtainsAgentur = new Curtains({
     container: document.getElementById("canvastwo"),
@@ -247,3 +247,12 @@ export function curtainsgenturfunc (smoothScroll) {
 }
 
 
+export function removePlanes() {
+  // remove all planes
+  for(let i = 0; i < pl.length; i++) {
+      pl[i].remove();
+  }
+
+  // reset our arrays
+  pl = [];
+}

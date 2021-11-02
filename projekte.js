@@ -1,15 +1,18 @@
 export var curtainsProj;
 export function projekte (smoothScroll){
-    let useNativeScroll;
+
+   let useNativeScroll;
     let scrollEffect = 0;
     let canvasclick;
     var planesDeformations = 0
-
+	let d = document;
+    let anchor1Link  = d.getElementById('anchor1Link');
+    let anchor1 = d.getElementById('anchor1');
+    gsap.set (".canvas_proj",{opacity:0});
 
     function lerp(start, end, amt) {
         return (1 - amt) * start + amt * end * 0.5;
       }
-
 
     // set up our WebGL context and append the canvas to our wrapper
     curtainsProj = new Curtains({
@@ -19,24 +22,13 @@ export function projekte (smoothScroll){
         autoRender: false, // use gsap ticker to render our scene
     });
 
-    function curtainsProjorHandler(curtainsProj) {
-
-        if (typeof curtainsProj === 'error') {
-            console.log(curtainsProj)
-            curtainsProj.remove();
-        }
-        else {
-            console.error('Unexpectedly, no curtainsProjor was passed to curtainsProjor handler. But here is the message:',curtainsProj);
-        }
-    }
-    curtainsProjorHandler(curtainsProj);
 
   curtainsProj.onRender(() => {
     if(useNativeScroll) {
         // update our planes deformation
         // increase/decrease the effect
-        planesDeformations = lerp(planesDeformations, 5, 0.075);
-        scrollEffect = lerp(scrollEffect, 5, 0.075);
+        planesDeformations = lerp(planesDeformations, 0, 0.00);
+        scrollEffect = lerp(scrollEffect, 5, 0.0);
     }
 }).onScroll(() => {
     // get scroll deltas to apply the effect on scroll
@@ -60,31 +52,31 @@ export function projekte (smoothScroll){
         scrollEffect = lerp(scrollEffect, delta.y, 0.5);
     }
 
-}).onError(() => {
-    // we will add a class to the document body to display original images
-    document.body.classList.add("no-curtains", "planes-loaded");
-  
-}).onContextLost(() => {
-    // on context lost, try to restore the context
-    curtainsProj.restoreContext();
-});
-
-function updateScroll(xOffset, yOffset) {
-    // update our scroll manager values
-    curtainsProj.updateScrollValues(xOffset, yOffset);
-}
-
-// custom scroll event
-if(!useNativeScroll) {
-    // we'll render only while lerping the scroll
-    curtainsProj.disableDrawing();
-    smoothScroll.on('scroll', (obj) => {
-        updateScroll(obj.scroll.x, obj.scroll.y);
-
-        // render scene
-        curtainsProj.needRender();
+    }).onError(() => {
+        // we will add a class to the document body to display original images
+        document.body.classList.add("no-curtains", "planes-loaded");
+    
+    }).onContextLost(() => {
+        // on context lost, try to restore the context
+        curtainsProj.restoreContext();
     });
-}
+
+    function updateScroll(xOffset, yOffset) {
+        // update our scroll manager values
+        curtainsProj.updateScrollValues(xOffset, yOffset);
+    }
+
+    // custom scroll event
+    if(!useNativeScroll) {
+        // we'll render only while lerping the scroll
+        curtainsProj.disableDrawing();
+        smoothScroll.on('scroll', (obj) => {
+            updateScroll(obj.scroll.x, obj.scroll.y);
+
+            // render scene
+            curtainsProj.needRender();
+        });
+    }
 
     ///// SMOOTH SCROLL END////
 
@@ -154,7 +146,7 @@ if(!useNativeScroll) {
             vertexPosition.y +=  distortionEffect * transition * (uMousePosition.y - vertexPosition.y);
 
 
-    vertexPosition.y += sin(((vertexPosition.x + 1.0) / 2.0) * 3.141592) * (sin(uPlaneDeformation / 100.0));
+    vertexPosition.y += sin(((vertexPosition.x + 1.0) / 2.0) * 3.141592) * (sin(uPlaneDeformation / 1000000.0));
 
 
             gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition, 1.0);
@@ -188,10 +180,12 @@ if(!useNativeScroll) {
     `;
 
     const params = {
+        sampler: "uTexture",
         vertexShader: vs,
         fragmentShader: fs,
-        widthSegments: 10,
-        heightSegments: 10,
+        widthSegments: 18,
+        heightSegments: 18,
+        autoloadSources: true,
         uniforms: {
             planeDeformation: {
                 name: "uPlaneDeformation",
@@ -219,13 +213,19 @@ if(!useNativeScroll) {
     // add our planes and handle them
     for(let i = 0; i < planeElements.length; i++) {
         const plane = new Plane(curtainsProj, planeElements[i], params);
+        
 
         planes.push(plane);
 
         handlePlanes(i);
     }
 
-    // handle all the planes
+        if (typeof plane === "string"){
+            console.log(plane);
+        }
+        else ;
+
+
     function handlePlanes(index) {
         const plane = planes[index];
 
@@ -239,14 +239,25 @@ if(!useNativeScroll) {
             }
 
             plane.htmlElement.addEventListener("click", (e) => {
-                onPlaneClick(e, plane);
+               
+                onPlaneClick(e, plane,);
                 gsap.to(".smooth-scroll", {
                     opacity: 0,
                     duration: 1.65,
                     ease: "power4.inOut"
                 });
+                gsap.to(".canvas_proj", {
+                    opacity: 1,
+                    duration: 0.1,
+                    ease: "power4.inOut"
+                });
 
                 
+
+                
+              
+                
+
             });
 
         }).onAfterResize(() => {
@@ -260,7 +271,7 @@ if(!useNativeScroll) {
                     curtainBoundingRect.height / planeBoundingRect.height
                 ));
 
-                plane.setRelativeTranslation(new Vec3(
+                plane.setRelativeTranslation(new Vec3(4
                     -1 * planeBoundingRect.left / curtainsProj.pixelRatio,
                     -1 * planeBoundingRect.top / curtainsProj.pixelRatio,
                     0
@@ -278,7 +289,7 @@ if(!useNativeScroll) {
 
 
     /*** GALLERY ***/
-
+ 
 
     const galleryState = {
         fullscreenThumb: false, // is actually displaying a fullscreen image
@@ -292,7 +303,7 @@ if(!useNativeScroll) {
     galleryState.closeButtonEl.addEventListener("click", () => {
         const fullScreenPlane = curtainsProj.planes.find(plane => plane.userData.isFullscreen);
 
-        smoothScroll.start();
+        // smoothScroll.start();
 
         // if there's a plane actually displayed fullscreen, we'll be shrinking it back to normal
         if(fullScreenPlane && galleryState.fullscreenThumb) {
@@ -375,8 +386,9 @@ if(!useNativeScroll) {
     },2000);
 
     function onPlaneClick(event, plane) {
-        canvasclick = document.getElementById("canvas_proj"); // close button element
-        
+        canvasclick = document.getElementById("canvas_projekte_under"); // close button element
+        smoothScroll.stop();
+        smoothScroll.destroy();
 
         // if no planes are already displayed fullscreen
         if(!galleryState.fullscreenThumb) {
@@ -477,14 +489,9 @@ if(!useNativeScroll) {
                 }
             });
             plane.setTransformOrigin(newTranslation);
-            
- 
-            
-            
+                       
         }
     }
-
-
 
 
     /*** POST PROCESSING ***/
@@ -752,7 +759,6 @@ if(!useNativeScroll) {
     flowTexture.onSourceUploaded(() => {
         const fxaaPass = new FXAAPass(curtainsProj);
     });
-
 
 
     

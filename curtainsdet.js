@@ -1,63 +1,57 @@
-document.addEventListener('DOMContentLoaded', ()=>{
-    document.querySelectorAll('plane_proj_det').forEach(trigger => {
-     trigger.addEventListener('click', function(){ 
-       this.x = ((this.x || 0) + 1)%2; 
-       if(this.x){ 
-         document.getElementById('canvas').forEach(target => target.classList.add('.no-scroll'));
-       }
-       else{ 
-         document.getElementById('canvas').forEach(target => target.classList.remove('.no-scroll'));
-       } 
-     });
-    });
-   });
+export var curtainsDet;
+
+    
+
+export function curtainsProjDet (smoothScroll){
+    $(document).ready(function () {
 
 
-window.addEventListener("load", () => {
+    var imagesLoaded = 0;
 
 
+      // When we begin, assume no images are loaded.
+      // Count the total number of images on the page when the page has loaded.
+      var totalImages = $("img").length
+    
+      // After an image is loaded, add to the count, and if that count equals the
+      // total number of images, fire the allImagesLoaded() function.
+      $("img").on("load", function (event) {
+        imagesLoaded++
+        if (imagesLoaded == totalImages) {
+        }
+      })
 
-    function lerp (start, end, amt){
-        return (1 - amt) * start + amt * end *.5;
-    }
+
+   let useNativeScroll;
     let scrollEffect = 0;
+    let canvasclick;
     var planesDeformations = 0
+	let d = document;
 
-    ///// SMOOTH SCROLL BEGIN////
-  
-    // handle smooth scroll and update planes positions
-    const smoothScroll = new LocomotiveScroll({
-        el: document.getElementById('page-content'),
-        smooth: true,
-        inertia: 0.5,
-        passive: true,
-   
-    });
 
-    const useNativeScroll = smoothScroll.isMobile;
+    function lerp(start, end, amt) {
+        return (1 - amt) * start + amt * end * 0.5;
+      }
 
     // set up our WebGL context and append the canvas to our wrapper
-    const curtains = new Curtains({
-        container: "canvas",
+    curtainsDet = new Curtains({
+        container: document.getElementById("canvas_proj_det"),
         watchScroll: useNativeScroll, // watch scroll on mobile not on desktop since we're using locomotive scroll
         pixelRatio: Math.min(1.5, window.devicePixelRatio), // limit pixel ratio for performance
         autoRender: false, // use gsap ticker to render our scene
     });
 
 
-
-
-
-  curtains.onRender(() => {
+  curtainsDet.onRender(() => {
     if(useNativeScroll) {
         // update our planes deformation
         // increase/decrease the effect
-        planesDeformations = lerp(planesDeformations, 5, 0.075);
-        scrollEffect = lerp(scrollEffect, 5, 0.075);
+        planesDeformations = lerp(planesDeformations, 0, 0.00);
+        scrollEffect = lerp(scrollEffect, 5, 0.0);
     }
 }).onScroll(() => {
     // get scroll deltas to apply the effect on scroll
-    const delta = curtains.getScrollDeltas();
+    const delta = curtainsDet.getScrollDeltas();
 
     // invert value for the effect
     delta.y = -delta.y;
@@ -80,38 +74,33 @@ window.addEventListener("load", () => {
 }).onError(() => {
     // we will add a class to the document body to display original images
     document.body.classList.add("no-curtains", "planes-loaded");
+        plane.remove();
+  
 }).onContextLost(() => {
     // on context lost, try to restore the context
-    curtains.restoreContext();
+    curtainsDet.restoreContext();
 });
 
 function updateScroll(xOffset, yOffset) {
     // update our scroll manager values
-    curtains.updateScrollValues(xOffset, yOffset);
+    curtainsDet.updateScrollValues(xOffset, yOffset);
 }
 
 // custom scroll event
 if(!useNativeScroll) {
     // we'll render only while lerping the scroll
-    curtains.disableDrawing();
+    curtainsDet.disableDrawing();
     smoothScroll.on('scroll', (obj) => {
         updateScroll(obj.scroll.x, obj.scroll.y);
 
         // render scene
-        curtains.needRender();
+        curtainsDet.needRender();
     });
 }
 
-
-
-
     ///// SMOOTH SCROLL END////
 
-
-
-
-
-
+    
     const mouse = new Vec2();
     const lastMouse = mouse.clone();
     const velocity = new Vec2();
@@ -120,13 +109,14 @@ if(!useNativeScroll) {
     // use gsap ticker to render our scene
     // gsap ticker handles different monitor refresh rates
     // besides for performance we'll want to have only one request animation frame loop running
-    gsap.ticker.add(curtains.render.bind(curtains));
+    gsap.ticker.add(curtainsDet.render.bind(curtainsDet));
 
     // we will keep track of all our planes in an array
     const planes = [];
 
+
     // get our planes elements
-    const planeElements = document.getElementsByClassName("plane_proj_det");
+    var planeElements = document.getElementsByClassName("plane_test");
 
     const vs = `
         precision mediump float;
@@ -176,8 +166,8 @@ if(!useNativeScroll) {
             vertexPosition.y +=  distortionEffect * transition * (uMousePosition.y - vertexPosition.y);
 
 
-    //   // cool effect on scroll
-  vertexPosition.y += sin(((vertexPosition.x + 1.0) / 2.0) * 3.141592) * (sin(uPlaneDeformation / 100.0));
+    vertexPosition.y += sin(((vertexPosition.y * vertexPosition.x + 1.0) / 2.0) * 3.141592) * (sin(uPlaneDeformation / 100.0))/1.3;
+
 
 
             gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition, 1.0);
@@ -189,7 +179,7 @@ if(!useNativeScroll) {
     `;
 
     const fs = `
-        precision mediump float;
+        precision highp float;
 
         varying vec3 vVertexPosition;
         varying vec2 vTextureCoord;
@@ -211,10 +201,12 @@ if(!useNativeScroll) {
     `;
 
     const params = {
+        sampler: "uTexture",
         vertexShader: vs,
         fragmentShader: fs,
         widthSegments: 10,
         heightSegments: 10,
+        autoloadSources: true,
         uniforms: {
             planeDeformation: {
                 name: "uPlaneDeformation",
@@ -241,17 +233,17 @@ if(!useNativeScroll) {
 
     // add our planes and handle them
     for(let i = 0; i < planeElements.length; i++) {
-        const plane = new Plane(curtains, planeElements[i], params);
-
+        const plane = new Plane(curtainsDet, planeElements[i], params);
+        plane.onError(() => {
+            plane.remove();
+        });
         planes.push(plane);
 
         handlePlanes(i);
     }
-
-    // handle all the planes
     function handlePlanes(index) {
         const plane = planes[index];
-
+       
         plane.onReady(() => {
             plane.textures[0].setScale(new Vec2(1, 1));
 
@@ -262,21 +254,31 @@ if(!useNativeScroll) {
             }
 
             plane.htmlElement.addEventListener("click", (e) => {
-                onPlaneClick(e, plane);
+              smoothScroll.stop();
+              smoothScroll.destroy();
+                onPlaneClick(e, plane,);
                 gsap.to(".smooth-scroll", {
                     opacity: 0,
                     duration: 1.65,
                     ease: "power4.inOut"
                 });
+                gsap.to(".canvas_proj", {
+                    opacity: 1,
+                    duration: 0.2,
+                    ease: "power4.inOut"
+                });
 
+                document.body.style.overflow ="hidden";
+              
                 
+
             });
 
         }).onAfterResize(() => {
             // if plane is displayed fullscreen, update its scale and translations
             if(plane.userData.isFullscreen) {
                 const planeBoundingRect = plane.getBoundingRect();
-                const curtainBoundingRect = curtains.getBoundingRect();
+                const curtainBoundingRect = curtainsDet.getBoundingRect();
 
                 plane.setScale(new Vec2(
                     curtainBoundingRect.width / planeBoundingRect.width,
@@ -284,8 +286,8 @@ if(!useNativeScroll) {
                 ));
 
                 plane.setRelativeTranslation(new Vec3(
-                    -1 * planeBoundingRect.left / curtains.pixelRatio,
-                    -1 * planeBoundingRect.top / curtains.pixelRatio,
+                    -1 * planeBoundingRect.left / curtainsDet.pixelRatio,
+                    -1 * planeBoundingRect.top / curtainsDet.pixelRatio,
                     0
                 ));
             }
@@ -296,12 +298,16 @@ if(!useNativeScroll) {
             plane.uniforms.planeDeformation.value = planesDeformations;
 
         });
+
+        plane.onError(() => {
+            plane.remove();
+        });
     }
 
 
 
     /*** GALLERY ***/
-
+ 
 
     const galleryState = {
         fullscreenThumb: false, // is actually displaying a fullscreen image
@@ -313,9 +319,8 @@ if(!useNativeScroll) {
 
     // on closing a fullscreen image
     galleryState.closeButtonEl.addEventListener("click", () => {
-        const fullScreenPlane = curtains.planes.find(plane => plane.userData.isFullscreen);
+        const fullScreenPlane = curtainsDet.planes.find(plane => plane.userData.isFullscreen);
 
-        smoothScroll.start();
 
         // if there's a plane actually displayed fullscreen, we'll be shrinking it back to normal
         if(fullScreenPlane && galleryState.fullscreenThumb) {
@@ -334,7 +339,7 @@ if(!useNativeScroll) {
             fullScreenPlane.uniforms.time.value = 0;
 
             // draw all other planes again
-            const allOtherPlanes = curtains.planes.filter(el => el.uuid !== fullScreenPlane.uuid && el.type !== "PingPongPlane");
+            const allOtherPlanes = curtainsDet.planes.filter(el => el.uuid !== fullScreenPlane.uuid && el.type !== "PingPongPlane");
             allOtherPlanes.forEach(el => {
                 el.visible = true;
             });
@@ -398,9 +403,8 @@ if(!useNativeScroll) {
     },2000);
 
     function onPlaneClick(event, plane) {
-        canvasclick = document.getElementById("canvas"); // close button element
-        
-
+        canvasclick = document.getElementById("canvas_proj"); // close button element
+   
         // if no planes are already displayed fullscreen
         if(!galleryState.fullscreenThumb) {
             // set fullscreen state
@@ -423,7 +427,7 @@ if(!useNativeScroll) {
 
             // we'll be using bounding rect values to tween scale and translation values
             const planeBoundingRect = plane.getBoundingRect();
-            const curtainBoundingRect = curtains.getBoundingRect();
+            const curtainBoundingRect = curtainsDet.getBoundingRect();
 
             // starting values
             let animation = {
@@ -453,8 +457,8 @@ if(!useNativeScroll) {
             galleryState.openTween = gsap.to(animation, 2, {
                 scaleX: curtainBoundingRect.width / planeBoundingRect.width,
                 scaleY: curtainBoundingRect.height / planeBoundingRect.height,
-                translationX: -1 * planeBoundingRect.left / curtains.pixelRatio,
-                translationY: -1 * planeBoundingRect.top / curtains.pixelRatio,
+                translationX: -1 * planeBoundingRect.left / curtainsDet.pixelRatio,
+                translationY: -1 * planeBoundingRect.top / curtainsDet.pixelRatio,
                 transition: 1,
                 textureScale: 1,
                 mouseX: 0,
@@ -485,7 +489,7 @@ if(!useNativeScroll) {
                 },
                 onComplete: function() {
                     // do not draw all other planes since animation is complete and they are hidden
-                    const nonClickedPlanes = curtains.planes.filter(el => el.uuid !== plane.uuid && el.type !== "PingPongPlane");
+                    const nonClickedPlanes = curtainsDet.planes.filter(el => el.uuid !== plane.uuid && el.type !== "PingPongPlane");
 
                     nonClickedPlanes.forEach(el => {
                         el.visible = false;
@@ -501,8 +505,7 @@ if(!useNativeScroll) {
             });
             plane.setTransformOrigin(newTranslation);
             
-            smoothScroll.stop();
-            smoothScroll.destroy();
+ 
             
             
         }
@@ -614,7 +617,7 @@ if(!useNativeScroll) {
     `;
 
 
-    const bbox = curtains.getBoundingRect();
+    const bbox = curtainsDet.getBoundingRect();
 
     // note the use of half float texture and the custom sampler name used in our fragment shader
     const flowMapParams = {
@@ -668,7 +671,7 @@ if(!useNativeScroll) {
 
 
     // our ping pong plane
-    const flowMap = new PingPongPlane(curtains, curtains.container, flowMapParams);
+    const flowMap = new PingPongPlane(curtainsDet, curtainsDet.container, flowMapParams);
 
     flowMap.onRender(() => {
         // update mouse position
@@ -676,11 +679,11 @@ if(!useNativeScroll) {
 
         // update velocity
         if(!updateVelocity) {
-            velocity.set(curtains.lerp(velocity.x, 0, 0.5), curtains.lerp(velocity.y, 0, 0.5));
+            velocity.set(curtainsDet.lerp(velocity.x, 0, 0.5), curtainsDet.lerp(velocity.y, 0, 0.5));
         }
         updateVelocity = false;
 
-        flowMap.uniforms.velocity.value = new Vec2(curtains.lerp(velocity.x, 0, 0.1), curtains.lerp(velocity.y, 0, 0.1));
+        flowMap.uniforms.velocity.value = new Vec2(curtainsDet.lerp(velocity.x, 0, 0.1), curtainsDet.lerp(velocity.y, 0, 0.1));
     }).onAfterResize(() => {
         // update our window aspect ratio uniform
         const boundingRect = flowMap.getBoundingRect();
@@ -763,7 +766,7 @@ if(!useNativeScroll) {
     };
 
 
-    const shaderPass = new ShaderPass(curtains, passParams);
+    const shaderPass = new ShaderPass(curtainsDet, passParams);
 
     // create a texture that will hold our flowmap
     const flowTexture = shaderPass.createTexture({
@@ -774,6 +777,12 @@ if(!useNativeScroll) {
 
     // wait for our first pass and the flowmap to be ready
     flowTexture.onSourceUploaded(() => {
-        const fxaaPass = new FXAAPass(curtains);
+        const fxaaPass = new FXAAPass(curtainsDet);
     });
-});
+
+})
+
+
+    
+}
+
