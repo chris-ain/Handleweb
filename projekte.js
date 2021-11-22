@@ -1,5 +1,6 @@
 export var curtainsProj;
 export function projekte (smoothScroll){
+    $(document).ready(function () {
 
    let useNativeScroll;
     let scrollEffect = 0;
@@ -769,7 +770,7 @@ if(!useNativeScroll) {
         const fxaaPass = new FXAAPass(curtainsProj);
     });
 
-
+    });
     
 }
 

@@ -1,13 +1,9 @@
 
 import * as THREE from 'https://threejs.org/build/three.module.js';
 
-
-
-
-
 var $hamburger = $('.button');
 gsap.set('.navwrapper',{y:1000});  
-gsap.set('.navitems',{opacity:0, y:20});  
+gsap.set('.navitem',{opacity:0, y:50});  
 gsap.set('.sm_menu',{opacity:0})
 
 // var hamburgerMotion = new gsap.timeline()
@@ -61,8 +57,11 @@ class Transition {
 
 				const { uProgress } = this.mat.uniforms;
 
-				this.tl
-					.clear()
+				gsap.timeline({
+					paused: true,
+					defaults: { duration: 1.25, ease: "power3.inOut" },
+				})
+
 					.to(
 						uProgress,
 						{
@@ -78,9 +77,8 @@ class Transition {
 						},
 						0
 					)
-					.to('.navwrapper', {opacity: 1, y:0,  duration:0, stagger: .1,},0)
-
-					.to('.navitems', {opacity: 1, y:0,  duration:.5, delay:.4, stagger: .1,},0)
+					.to('.navwrapper', {opacity: 1, y:0,  duration:0, stagger: .1, delay:.5,},0)
+					.to('.navitem', {opacity: 1, y:0,  duration:.5, delay:.4, stagger: .1,},0)
 					.to('.sm_menu', {opacity:100,  delay:0, duration:.5  },0)
 
 					.add(() => {
@@ -100,7 +98,11 @@ class Transition {
 
 				const { uProgress, uOut } = this.mat.uniforms;
 
-				this.tl
+
+				gsap.timeline({
+					paused: true,
+					defaults: { duration: 1.25, delay:2, ease: "power3.inOut" },
+				})
 					.clear()
 					.set(uOut, { value: false })
 					.to(
@@ -118,7 +120,7 @@ class Transition {
 						},
 						0
 					)
-					.to('.navitems', {opacity: 0, y:20,   duration:.5, delay:0,},0)
+					.to('.navitem', {opacity: 0, y:50,   duration:.5, delay:0,},0)
 					.to('.sm_menu', {opacity:0,  delay:0, duration:.5  },0)
 					.to('.navwrapper', {opacity: 1, y:-1000,  duration:0, delay:.8,},0)
 
@@ -206,7 +208,7 @@ class Transition {
 			uniform bool uOut;
   
 			vec4 transparent = vec4(0., 0., 0., 0.);
-		  	vec4 black = vec4(1.0, 1.0, 1.0, 1.);
+		  vec4 black = vec4(1.0, 1.0, 1.0, 1.);
 
   
 			#define M_PI 3.1415926535897932384626433832795
@@ -244,8 +246,17 @@ class Transition {
 	}
 	addEvents() {
 		document.querySelector(".button").addEventListener("click", () => {
-			if (this.animating) return;
 			this.reverse ? this.in() : this.out();
+		});
+
+		$(".navitem").click(() => {
+			
+			this.reverse ? this.in() : this.out();
+
+		});
+
+		document.addEventListener("load", function () {
+			this.out();
 		});
 	}
 }
@@ -286,4 +297,7 @@ const render = () => {
 	requestAnimationFrame(render);
 
 };
+
+
+
 render();

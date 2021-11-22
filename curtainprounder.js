@@ -41,14 +41,13 @@ export function curtainsproundermain (smoothScroll) {
     let useNativeScroll;
 
 
-    const curtainsprounder = new Curtains({
-        container: document.getElementById("canvas_projekte_under"),
-        watchScroll: useNativeScroll, // watch scroll on mobile not on desktop since we're using locomotive scroll
+    curtainsprounder = new Curtains({
+      container: document.getElementById("canvas_projekte_under"),
+      watchScroll: useNativeScroll, // watch scroll on mobile not on desktop since we're using locomotive scroll
       pixelRatio: Math.min(1.5, window.devicePixelRatio), // limit pixel ratio for performance
     });
 
     
-
 
     curtainsprounder
       .onRender(() => {
@@ -112,24 +111,24 @@ export function curtainsproundermain (smoothScroll) {
     let planeDrawn = planeElements.length;
 
     const vs = `
-  precision mediump float;
-  
-  // default mandatory variables
-  attribute vec3 aVertexPosition;
-  attribute vec2 aTextureCoord;
+    precision mediump float;
+    
+    // default mandatory variables
+    attribute vec3 aVertexPosition;
+    attribute vec2 aTextureCoord;
 
-  uniform mat4 uMVMatrix;
-  uniform mat4 uPMatrix;
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
 
-  uniform mat4 planeTextureMatrix;
+    uniform mat4 planeTextureMatrix;
 
-  // custom variables
-  varying vec3 vVertexPosition;
-  varying vec2 vTextureCoord;
+    // custom variables
+    varying vec3 vVertexPosition;
+    varying vec2 vTextureCoord;
 
-  uniform float uPlaneDeformation;
+    uniform float uPlaneDeformation;
 
-  void main() {
+    void main() {
       vec3 vertexPosition = aVertexPosition;
 
       // cool effect on scroll

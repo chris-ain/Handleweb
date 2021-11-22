@@ -4,6 +4,7 @@ export var curtains;
 
 
 export function curtainsmain (smoothScroll) {
+  $(document).ready(function () {
 
 
     function lerp(start, end, amt) {
@@ -20,7 +21,7 @@ export function curtainsmain (smoothScroll) {
     let useNativeScroll;
 
 
-    const curtains_infunction = new Curtains({
+    curtains = new Curtains({
       container: "canvas",
       watchScroll: useNativeScroll, // watch scroll on mobile not on desktop since we're using locomotive scroll
       pixelRatio: Math.min(1.5, window.devicePixelRatio), // limit pixel ratio for performance
@@ -29,7 +30,7 @@ export function curtainsmain (smoothScroll) {
     
 
 
-    curtains_infunction
+    curtains
       .onRender(() => {
         if (useNativeScroll) {
           // update our planes deformation
@@ -40,7 +41,7 @@ export function curtainsmain (smoothScroll) {
       })
       .onScroll(() => {
         // get scroll deltas to apply the effect on scroll
-        const delta = curtains_infunction.getScrollDeltas();
+        const delta = curtains.getScrollDeltas();
 
         // invert value for the effect
         delta.y = -delta.y;
@@ -61,27 +62,27 @@ export function curtainsmain (smoothScroll) {
       })
       .onError(() => {
         // we will add a class to the document body to display original images
-        document.body.classList.add("no-curtains_infunction", "planes-loaded");
+        document.body.classList.add("no-curtains", "planes-loaded");
       })
       .onContextLost(() => {
         // on context lost, try to restore the context
-        curtains_infunction.restoreContext();
+        curtains.restoreContext();
       });
 
     function updateScroll(xOffset, yOffset) {
       // update our scroll manager values
-      curtains_infunction.updateScrollValues(xOffset, yOffset);
+      curtains.updateScrollValues(xOffset, yOffset);
     }
 
     // custom scroll event
     if (!useNativeScroll) {
       // we'll render only while lerping the scroll
-      curtains_infunction.disableDrawing();
+      curtains.disableDrawing();
       smoothScroll.on("scroll", (obj) => {
         updateScroll(obj.scroll.x, obj.scroll.y);
 
         // render scene
-        curtains_infunction.needRender();
+        curtains.needRender();
       });
     }
 
@@ -159,7 +160,7 @@ export function curtainsmain (smoothScroll) {
 
     // add our planes and handle them
     for (let i = 0; i < planeElements.length; i++) {
-      const plane = new Plane(curtains_infunction, planeElements[i], params);
+      const plane = new Plane(curtains, planeElements[i], params);
 
       planes.push(plane);
 
@@ -221,9 +222,9 @@ export function curtainsmain (smoothScroll) {
   }
 `;
 
-    var rgbTarget = new RenderTarget(curtains_infunction);
+    var rgbTarget = new RenderTarget(curtains);
 
-    var rgbPass = new ShaderPass(curtains_infunction, {
+    var rgbPass = new ShaderPass(curtains, {
       fragmentShader: rgbFs,
       renderTarget: rgbTarget,
       depthTest: false, // we need to disable the depth test to display that shader pass on top of the first one
@@ -242,7 +243,7 @@ export function curtainsmain (smoothScroll) {
         rgbPass.uniforms.scrollEffect.value = scrollEffect;
       });
     }
-
+  });
     
 }
 

@@ -1,5 +1,4 @@
-
-    
+ 
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
 
@@ -9,12 +8,14 @@ let stats, fxaaPass;
 const objects = [];
 const selects = [];
 let gui;
+const spheres = [];
 
 export var id;
 export  var scene;
 export var expModel;
 
 export function chessScene(smoothScroll) {
+
 
 
     //===================================================== canvas
@@ -42,10 +43,23 @@ export function chessScene(smoothScroll) {
     reflectionCube.mapping = THREE.EquirectangularReflectionMapping;
     refractionCube.mapping = THREE.EquirectangularRefractionMapping;
     scene.environment = reflectionCube;
+    // texLoader = new THREE.TextureLoader();
+    // var normal = texLoader.load( 'https://uploads-ssl.webflow.com/612d2c01db57a270ec502b3f/61885cd22ccdfed3d95febbf_download.jpg');
 
     //===================================================== camera
     
-    
+    const transmissionoptions = {
+ 
+      transmission: 1,
+      thickness: 15,
+      roughness: 0.2,
+      envMapIntensity: 2.6,
+      clearcoat: 1,
+      clearcoatRoughness: 0.0,
+      // normalScale: .31,
+      // clearcoatNormalScale: 0,
+      // normalRepeat: 1
+    };
     
     var camera = new THREE.PerspectiveCamera(
       75,
@@ -90,8 +104,42 @@ export function chessScene(smoothScroll) {
 				bloomRadius: 0
 		};
 
-  
 
+    const groupBubbles = new THREE.Group();
+
+
+    const materialTrans = new THREE.MeshPhysicalMaterial({
+      transmission: transmissionoptions.transmission,
+      thickness: transmissionoptions.thickness,
+      roughness: transmissionoptions.roughness,
+      envMap: reflectionCube,
+      envMapIntensity: transmissionoptions.envMapIntensity,
+      clearcoat: transmissionoptions.clearcoat,
+      clearcoatRoughness: transmissionoptions.clearcoatRoughness,
+      // normalScale: new THREE.Vector2(transmissionoptions.normalScale),
+      // normalMap: normal,
+      // clearcoatNormalMap: normalMapTexture,
+      // clearcoatNormalScale: new THREE.Vector2(transmissionoptions.clearcoatNormalScale)
+    });
+    const geometrySphere = new THREE.SphereGeometry( 2, 100, 100 );
+    const sphere = new THREE.Mesh( geometrySphere, materialTrans );
+
+    for ( let i = 0; i < 10; i ++ ) {
+
+      const mesh = new THREE.Mesh( geometrySphere, materialTrans );
+
+      mesh.position.x = Math.random() * 5 - 5;
+      mesh.position.y = Math.random() * 5 - 5;
+      mesh.position.z = Math.random() * 5 - 5;
+
+      mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * .4 +0;
+
+      groupBubbles.add( mesh );
+      scene.add(groupBubbles)
+
+      spheres.push( mesh );
+
+    }
 
 
     
@@ -107,6 +155,7 @@ var clips;
 var mixers = [];
 
 const group = new THREE.Group();
+
 
 loader.load(
   "https://raw.githubusercontent.com/chris-ain/handlefinal/main/chess_board21.glb",
@@ -273,6 +322,8 @@ loader.load(
   // // folder.add( ssrrPass, 'infiniteThick' );
   // // folder.open()
   // // gui.close()
+
+
   //   //===================================================== resize
     window.addEventListener("resize", function () {
       let width = window.innerWidth;
@@ -287,6 +338,67 @@ loader.load(
       // fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( container.offsetHeight * pixelRatio );
     });
 
+
+
+
+    // const handlePointerMove = ({ clientX, clientY }) => {
+    //   const centerPoint = {
+    //     x: window.innerWidth / 2,
+    //     y: window.innerHeight / 2,
+    //   };
+    //   const z = (clientX - centerPoint.x) / 6000;
+    //   const x = (clientY - centerPoint.y) / 6000;
+    //   gsap.to(camera.rotation, {
+    //     x: -x,
+    //     y: -z,
+    //     duration: 1,
+    //     ease: "power2.out",
+    //     onUpdate: renderer.render(scene, camera),
+    //   });
+
+    // };
+    // window.addEventListener("pointermove", handlePointerMove);
+ 
+
+    // const handlePointerMove = ({ clientX, clientY }) => {
+    //   const centerPoint = {
+    //     x: window.innerWidth / 2,
+    //     y: window.innerHeight / 2,
+    //   };
+    //   const z = (clientX - centerPoint.x) / 60;
+    //   const x = (clientY - centerPoint.y) / 60;
+    //   gsap.to(sphere.position, {
+    //     x: x,
+    //     y: z,
+    //     duration: 1,
+    //     ease: "power2.out",
+    //     onUpdate: renderer.render(scene, camera),
+    //   });
+    // };
+    // window.addEventListener("pointermove", handlePointerMove);
+ 
+
+
+
+    // var plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    // // scene.add(new THREE.PlaneHelper( plane, 100, 0xffff00 ));
+    
+    
+    
+
+
+    // var mouse = new THREE.Vector2();
+    // var raycaster = new THREE.Raycaster();
+    // var intersects = new THREE.Vector3();
+    
+    // function onMouseMove(e) {
+    //   mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    //   mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    //   raycaster.setFromCamera(mouse, camera);
+    //   raycaster.ray.intersectPlane(plane, intersects);
+    //   sphere.position.set(intersects.x, intersects.y, intersects.z);
+    // }
+    
 
 
 
@@ -309,11 +421,20 @@ function render() {
   id = requestAnimationFrame(render);
   renderer.render(scene, camera);
   // stats.update();
+  const timer = 0.0001 * Date.now();
 
   var delta = clock.getDelta();
 
   if (mixer != null) mixer.update(delta);
   if (group) group.rotation.y += 0.001;
+  for ( let i = 0, il = spheres.length; i < il; i ++ ) {
+
+					const sphere = spheres[ i ];
+
+					sphere.position.x = 5 * Math.cos( timer + i );
+					sphere.position.y = 5 * Math.sin( timer + i * 1.1 );
+
+				}
 
 }
 
@@ -342,7 +463,7 @@ function createAnimation(mixer, action, clip) {
 
   let scrollingTL = gsap.timeline({
     scrollTrigger: {
-      offset: -100,
+      // offset: -100,
       trigger: ".smooth-scroll",
       scroller: ".smooth-scroll",
       start: "top top",
@@ -382,7 +503,7 @@ onUpdate: function () {
     z:-Math.PI/5,
 
   });
-
+  
   let scrollingTL3 = gsap.timeline({
     scrollTrigger: {
       trigger: ".smooth-scroll",
@@ -403,6 +524,29 @@ onUpdate: function () {
     scrollingTL3.to(model.position, {
     x:2,
     y:-2,
+
+  });
+
+  let scrollingTLBubbles = gsap.timeline({
+    scrollTrigger: {
+      trigger: ".smooth-scroll",
+      scroller: ".smooth-scroll",
+      start: "top top",
+      end: "bottom",
+      pin: true,
+      scrub: true,
+        ease: Power3.easeInOut,
+onUpdate: function () {
+        camera.updateProjectionMatrix();
+      }
+    }
+  }, );
+
+  
+
+    scrollingTLBubbles.to(groupBubbles.position, {
+ 
+    y:20
 
   });
 
@@ -430,28 +574,28 @@ onUpdate: function () {
 
 
 
-  let scrollingTL5 = gsap.timeline({
-    scrollTrigger: {
-      trigger: ".smooth-scroll",
-      scroller: ".smooth-scroll",
-      start: "top top",
-      endtrigger: "#intro",
-      pin: true,
-      scrub: true,
-        ease: Power3.easeInOut,
-onUpdate: function () {
-        camera.updateProjectionMatrix();
-      }
-    }
-  }, );
+//   let scrollingTL5 = gsap.timeline({
+//     scrollTrigger: {
+//       trigger: ".smooth-scroll",
+//       scroller: ".smooth-scroll",
+//       start: "top top",
+//       endtrigger: "#intro",
+//       pin: true,
+//       scrub: true,
+//         ease: Power3.easeInOut,
+// onUpdate: function () {
+//         camera.updateProjectionMatrix();
+//       }
+//     }
+//   }, );
 
   
 
-    scrollingTL5.to('.hero_head', {
-      scale:0,
-    opacity:0,
+//     scrollingTL5.to('.hero_head', {
+//       scale:0,
+//     opacity:0,
 
-  });
+//   });
 
   // $(gui.domElement).attr("hidden", true);
 

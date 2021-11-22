@@ -1,9 +1,10 @@
-import { chessScene } from "./chess.js";
+
+import { chessScene, id } from "./chess.js";
 import { curtainsmain, curtains } from "./curtainsmain.js";
 import { projekte, curtainsProj } from "./projekte.js";
+import { intro } from "./intro.js";
 import {
   curtainsAg,
-  removePlanes,
   pl,
   curtainsgenturfunc,
 } from "./curtainsagentur.js";
@@ -13,7 +14,7 @@ import { curtainsproundermain, curtainsprounder } from "./curtainprounder.js";
 gsap.registerPlugin(ScrollTrigger);
 
 //MAIN//
-window.addEventListener("load", function () {
+
 
   function init() {
     var imagesLoaded = 0;
@@ -21,6 +22,7 @@ window.addEventListener("load", function () {
     const body = document.body;
     const select = (e) => document.querySelector(e);
     const selectAll = (e) => document.querySelectorAll(e);
+    const pageWrap = select(".page_wrap");
     const loader = select(".js-loader");
     const loaderInner = select(".js-loader__inner");
     const progressBar = select(".js-loader__progress");
@@ -30,6 +32,7 @@ window.addEventListener("load", function () {
     let smoothScroll;
 
     ////////BARBA INIT//////////
+    gsap.set(pageWrap, { autoAlpha: 0 });
 
     // show loader on page load
     gsap.set(loader, { autoAlpha: 1 });
@@ -49,7 +52,9 @@ window.addEventListener("load", function () {
       });
       tl.set(loaderInner, { autoAlpha: 0 })
         .fromTo(loader, { yPercent: -100 }, { yPercent: 0 })
-        .fromTo(loaderMask, { yPercent: 80 }, { yPercent: 0 }, 0);
+        .fromTo(loaderMask, { yPercent: 80 }, { yPercent: 0 }, 0)
+        
+      
       // .to(container, { y: 150}, 0)
       return tl;
     }
@@ -64,16 +69,21 @@ window.addEventListener("load", function () {
         onComplete: () => initScript(),
       });
       tl.to(loader, { yPercent: 100 }).to(loaderMask, { yPercent: -80 }, 0);
+     
+
+
       // .from(container, { y: -150}, 0)
       return tl;
     }
 
     function initPageTransitions() {
       barba.hooks.before(() => {
+
         select("html").classList.add("is-transitioning");
       });
 
       barba.hooks.after(() => {
+
         select("html").classList.remove("is-transitioning");
         // reinit locomotive scroll
         smoothScroll.init();
@@ -94,61 +104,91 @@ window.addEventListener("load", function () {
           {
             namespace: "home",
 
-            beforeEnter() {},
+            beforeEnter() {
+   gsap.to(loader, {
+                opacity: 1,
+                duration: 0,
+              });
+            },
 
             afterEnter() {
+              gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:3 });
+              $(document).ready(function () {
+
               curtainsmain(smoothScroll);
               chessScene();
+              });
             },
 
             beforeLeave(data) {
-              setTimeout(function () {
-                removePlanes(pl);
-              }, 1000);
+              cancelAnimationFrame( id );
+              curtains.clear();
+
+              curtains.dispose();
+
             },
           },
           /////////// AGENTUR /////////////////////////
           {
             namespace: "agentur",
-            beforeEnter() {},
+            beforeEnter() {
+              curtainsAg.clear();
+
+            },
 
             afterEnter() {
+              $(document).ready(function () {
+
               curtainsgenturfunc(smoothScroll);
+
+              });
             },
 
             beforeLeave(data) {
               setTimeout(function () {
-                removePlanes(pl);
+                curtainsAg.dispose();
+                curtainsAg.clear();
+
+
               }, 1000);
             },
           },
           /////////// PROJEKTE /////////////////////////
           {
             namespace: "projekte",
-            beforeEnter() {},
+            beforeEnter() {
+              // gsap.to(loader, {
+              //   opacity: 1,
+              //   duration: 0,
+              // });
+
+            },
 
             afterEnter() {
-              projekte(smoothScroll);
+              // projekte(smoothScroll);
               curtainsproundermain(smoothScroll);
             },
 
             beforeLeave(data) {
-              removePlanes(pl);
+              setTimeout(function () {
+              // curtainsProj.dispose();
+              curtainsprounder.dispose();
+            }, 1000);
 
-              gsap.to(loader, {
-                opacity: 0,
-                duration: 0,
-              });
+              // gsap.to(loader, {
+              //   opacity: 0,
+              //   duration: 0,
+              // });
             },
           },
           /////////// PROJEKTDETAIL /////////////////////////
           {
             namespace: "projektdetail",
             beforeEnter() {
-              gsap.to(loader, {
-                opacity: 0,
-                duration: 0,
-              });
+              // gsap.to(loader, {
+              //   opacity: 0,
+              //   duration: 0,
+              // });
             },
             afterEnter() {
               $(document).ready(function () {
@@ -182,13 +222,13 @@ window.addEventListener("load", function () {
             },
 
             beforeLeave(data) {
-              gsap.to(loader, {
-                opacity: 0,
-                duration: 0,
-              });
+              // gsap.to(loader, {
+              //   opacity: 0,
+              //   duration: 0,
+              // });
 
-              setTimeout(function () {
-                removePlanes(pl);
+              setTimeout(function () {         
+                curtainsDet.dispose();     
               }, 2000);
             },
           },
@@ -207,6 +247,7 @@ window.addEventListener("load", function () {
               initSmoothScroll(data.next.container);
 
               initLoader();
+              intro();
             },
             async leave(data) {
               // animate loading screen in
@@ -312,7 +353,18 @@ window.addEventListener("load", function () {
       });
 
       tlLoaderOut.to(loader, { yPercent: -100 }, 0.2);
-      // .from('.main', {y: 150}, 0.2);
+      tlLoaderOut.from('.main', {y: 150}, 0.2);
+      tlLoaderOut.to(".page_wrap", {
+        opacity: 1, duration: .5, delay: 1
+
+      })
+      tlLoaderOut.from(".h1_chars_full", {
+       stagger:.05,opacity: 0, duration: .7, y:50, 
+      },"-=3")
+
+      tlLoaderOut.to(".sub_hero", {
+       opacity: 1, duration: .7, y:50, delay:10
+      })
 
       const tlLoader = gsap.timeline();
       tlLoader.add(tlLoaderIn).add(tlLoaderOut);
@@ -334,5 +386,12 @@ window.addEventListener("load", function () {
     }
   }
 
+  $(document).ready(function () {
+
+
   init();
-});
+
+  });
+
+
+

@@ -1,8 +1,8 @@
 export var curtainsAg;
-export var pl = [];
+export var pl;
+
+
 export function curtainsgenturfunc (smoothScroll) {
-
-
 
     function lerp(start, end, amt) {
         return (1 - amt) * start + amt * end * 0.5;
@@ -16,13 +16,15 @@ export function curtainsgenturfunc (smoothScroll) {
     let scrollEffect = 0;
     var planesDeformations = 0;
     let useNativeScroll;
-    pl = planes;
 
+    pl = planes;
     const curtainsAgentur = new Curtains({
-      container: document.getElementById("canvastwo"),
+    container: document.getElementById("canvastwo"),
+
       watchScroll: useNativeScroll, // watch scroll on mobile not on desktop since we're using locomotive scroll
       pixelRatio: Math.min(1.5, window.devicePixelRatio), // limit pixel ratio for performance
     });
+    curtainsAgentur.clear();
 
     curtainsAg = curtainsAgentur;
 
@@ -95,26 +97,18 @@ export function curtainsgenturfunc (smoothScroll) {
   // default mandatory variables
   attribute vec3 aVertexPosition;
   attribute vec2 aTextureCoord;
-
   uniform mat4 uMVMatrix;
   uniform mat4 uPMatrix;
-
   uniform mat4 planeTextureMatrix;
-
   // custom variables
   varying vec3 vVertexPosition;
   varying vec2 vTextureCoord;
-
   uniform float uPlaneDeformation;
-
   void main() {
       vec3 vertexPosition = aVertexPosition;
-
       // cool effect on scroll
       vertexPosition.y += sin(((vertexPosition.x + 1.0) / 2.0) * 3.141592) * (sin(uPlaneDeformation / 100.0));
-
       gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition, 1.0);
-
       // varyings
       vVertexPosition = vertexPosition;
       vTextureCoord = (planeTextureMatrix * vec4(aTextureCoord, 0.0, 1.0)).xy;
@@ -126,9 +120,7 @@ export function curtainsgenturfunc (smoothScroll) {
   
   varying vec3 vVertexPosition;
   varying vec2 vTextureCoord;
-
   uniform sampler2D planeTexture;
-
   void main() {
       // just display our texture
       gl_FragColor = texture2D(planeTexture, vTextureCoord);
@@ -196,25 +188,18 @@ export function curtainsgenturfunc (smoothScroll) {
 
     var rgbFs = `
   precision mediump float;
-
   varying vec3 vVertexPosition;
   varying vec2 vTextureCoord;
-
   uniform sampler2D uRenderTexture;
-
   uniform float uScrollEffect;
-
   void main() {
       vec2 textureCoords = vTextureCoord;
-
       vec2 redTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 400.0);
       vec2 greenTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 3000.0);
       vec2 blueTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 3000.0);
-
       vec4 red = texture2D(uRenderTexture, redTextCoords);
       vec4 green = texture2D(uRenderTexture, greenTextCoords);
       vec4 blue = texture2D(uRenderTexture, blueTextCoords);
-
       vec4 finalColor = vec4(red.r, green.g, blue.b, min(1.0, red.a * blue.a * green.a));
       gl_FragColor = finalColor;
   }
@@ -242,16 +227,5 @@ export function curtainsgenturfunc (smoothScroll) {
       });
     }
 
-    
-}
 
-
-export function removePlanes() {
-  // remove all planes
-  for(let i = 0; i < pl.length; i++) {
-      pl[i].remove();
-  }
-
-  // reset our arrays
-  pl = [];
 }
