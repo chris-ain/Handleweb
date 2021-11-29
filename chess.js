@@ -196,36 +196,16 @@ loader.load(
     clips.paused= true;
     createAnimation(mixer, action, gltf.animations[1]);
 
-  gsap.from(model.position, {
-              duration: 3,
-              ease: Power3.easeInOut,
-              delay:.8,
-              y:-20,
-          
-
-          });
-        //   tlmod.from(model.rotation, {
-        //     duration: 2,
-        //     ease: Power3.easeInOut,
-        //     delay:3,
-        //     y:2*Math.PI,
-        //     // x:2*Math.PI,
-
-        // });
-
+    
   
   }
 );
     
-    
-    
-    
+   
         
      //===================================================== Postprocessing
     
-    
-    
-    
+
     //  const pixelRatio = renderer.getPixelRatio();
 
     
