@@ -26,7 +26,7 @@ export function chessScene(smoothScroll) {
 
     //===================================================== scene
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2( 0xf7f7f7, 0.005 );
+    scene.fog = new THREE.FogExp2( 0x741111,.15, 100 );
 
     // ////
     // const paramsts = {
@@ -135,7 +135,7 @@ export function chessScene(smoothScroll) {
       mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * .4 +0;
 
       groupBubbles.add( mesh );
-      scene.add(groupBubbles)
+      // scene.add(groupBubbles)
 
       spheres.push( mesh );
 
@@ -196,12 +196,22 @@ loader.load(
     clips.paused= true;
     createAnimation(mixer, action, gltf.animations[1]);
 
-    // gsap.from(model.position, {
-    //           duration: 3,
-    //           ease: Power3.easeInOut,
-    //           x:150,
+  gsap.from(model.position, {
+              duration: 3,
+              ease: Power3.easeInOut,
+              delay:.8,
+              y:-20,
+          
 
-    //       });
+          });
+        //   tlmod.from(model.rotation, {
+        //     duration: 2,
+        //     ease: Power3.easeInOut,
+        //     delay:3,
+        //     y:2*Math.PI,
+        //     // x:2*Math.PI,
+
+        // });
 
   
   }
@@ -448,6 +458,8 @@ function createAnimation(mixer, action, clip) {
     },
     set time(value) {
 
+      
+
       clips.forEach(element => {
         var last = mixer.clipAction( element );
         last.paused = false;
@@ -463,12 +475,10 @@ function createAnimation(mixer, action, clip) {
 
   let scrollingTL = gsap.timeline({
     scrollTrigger: {
-      // offset: -100,
       trigger: ".smooth-scroll",
       scroller: ".smooth-scroll",
-      start: "top top",
+      start: "top 10",
       end: "bottom",
-      pin: true,
       scrub: true,
       ease: Power3.easeInOut,
       onUpdate: function () {
@@ -488,7 +498,6 @@ function createAnimation(mixer, action, clip) {
       scroller: ".smooth-scroll",
       start: "top top",
       end: "bottom",
-      pin: true,
       scrub: true,
         ease: Power3.easeInOut,
 onUpdate: function () {
@@ -510,7 +519,6 @@ onUpdate: function () {
       scroller: ".smooth-scroll",
       start: "top top",
       end: "bottom",
-      pin: true,
       scrub: true,
         ease: Power3.easeInOut,
 onUpdate: function () {
@@ -524,51 +532,6 @@ onUpdate: function () {
     scrollingTL3.to(model.position, {
     x:2,
     y:-2,
-
-  });
-
-  let scrollingTLBubbles = gsap.timeline({
-    scrollTrigger: {
-      trigger: ".smooth-scroll",
-      scroller: ".smooth-scroll",
-      start: "top top",
-      end: "bottom",
-      pin: true,
-      scrub: true,
-        ease: Power3.easeInOut,
-onUpdate: function () {
-        camera.updateProjectionMatrix();
-      }
-    }
-  }, );
-
-  
-
-    scrollingTLBubbles.to(groupBubbles.position, {
- 
-    y:20
-
-  });
-
-  let scrollingTL4 = gsap.timeline({
-    scrollTrigger: {
-      trigger: ".smooth-scroll",
-      scroller: ".smooth-scroll",
-      start: "top top",
-      end: "bottom",
-      pin: true,
-      scrub: true,
-        ease: Power3.easeInOut,
-onUpdate: function () {
-        camera.updateProjectionMatrix();
-      }
-    }
-  }, );
-
-  
-
-    scrollingTL4.to('#chess', {
-    opacity:0,
 
   });
 

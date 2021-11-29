@@ -3,8 +3,9 @@ import * as THREE from 'https://threejs.org/build/three.module.js';
 
 var $hamburger = $('.button');
 gsap.set('.navwrapper',{y:1000});  
-gsap.set('.navitem',{opacity:0, y:50});  
+gsap.set('.navitem',{opacity:0, y:-50});  
 gsap.set('.sm_menu',{opacity:0})
+gsap.set('.main',{opacity:0})
 
 // var hamburgerMotion = new gsap.timeline()
 // .to('.navitems', {opacity: 1, y: -20,  duration:.5, delay:.3, stagger: .1,},0)
@@ -18,7 +19,6 @@ gsap.set('.sm_menu',{opacity:0})
 // });
 
 const menucanvas = document.getElementById("fullscreen");
-
 function _defineProperty(obj, key, value) {
 	if (key in obj) {
 		Object.defineProperty(obj, key, {
@@ -77,10 +77,7 @@ class Transition {
 						},
 						0
 					)
-					.to('.navwrapper', {opacity: 1, y:0,  duration:0, stagger: .1, delay:.5,},0)
-					.to('.navitem', {opacity: 1, y:0,  duration:.5, delay:.4, stagger: .1,},0)
-					.to('.sm_menu', {opacity:100,  delay:0, duration:.5  },0)
-
+					
 					.add(() => {
 						this.animating = false;
 					})
@@ -101,7 +98,7 @@ class Transition {
 
 				gsap.timeline({
 					paused: true,
-					defaults: { duration: 1.25, delay:2, ease: "power3.inOut" },
+					defaults: { duration: 1.25, delay:1.3, ease: "power3.inOut" },
 				})
 					.clear()
 					.set(uOut, { value: false })
@@ -120,9 +117,7 @@ class Transition {
 						},
 						0
 					)
-					.to('.navitem', {opacity: 0, y:50,   duration:.5, delay:0,},0)
-					.to('.sm_menu', {opacity:0,  delay:0, duration:.5  },0)
-					.to('.navwrapper', {opacity: 1, y:-1000,  duration:0, delay:.8,},0)
+
 
 					.set(uOut, { value: true })
 					.add(() => {
@@ -245,19 +240,27 @@ class Transition {
 		this.addEvents();
 	}
 	addEvents() {
+
+		const menuTl = new gsap.timeline({paused:true})
+			menuTl.to('.navwrapper', {opacity: 1, y:0,  duration:0, delay:.5,});
+			menuTl.to('.navitem', {opacity: 1, y:0,  duration:.5, delay:.4, stagger: .06,});
+			menuTl.to('.sm_menu', {opacity:100,  delay:0, duration:.5  });
+			menuTl.reverse();
+
 		document.querySelector(".button").addEventListener("click", () => {
-			this.reverse ? this.in() : this.out();
-		});
-
-		$(".navitem").click(() => {
 			
+			menuTl.reversed(!menuTl.reversed());
+
 			this.reverse ? this.in() : this.out();
 
 		});
 
-		document.addEventListener("load", function () {
-			this.out();
+		$(".navitem").click(() => {			
+			this.reverse ? this.in() : this.out();
+
 		});
+
+	
 	}
 }
 const transition = new Transition();
@@ -266,7 +269,32 @@ window.addEventListener("resize", () => {
 	bounds.wh = window.innerHeight;
 	transition.resize();
 });
+window.addEventListener("load", function() {
+	const page = document.getElementById("main");
 
+	const tl = new gsap.timeline({});
+	
+	tl.to(page, {
+		opacity:0,
+		delay:0,
+		duration:1,
+	})
+	tl.to(page, {
+		opacity:1,
+		delay:1,
+	})
+	const  firstFunction = async ()=>{
+		transition.out();   
+	}	
+	const secondFunction = async () => {
+		const result = await firstFunction()
+		transition.in();	  
+	}
+	setTimeout(function(){ 
+		secondFunction();
+
+		 }, 500);
+  });
 
 /*--------------------
    Touch

@@ -10,6 +10,7 @@ import {
 } from "./curtainsagentur.js";
 import { curtainsProjDet, curtainsDet } from "./curtainsdet.js";
 import { curtainsproundermain, curtainsprounder } from "./curtainprounder.js";
+import {slider} from "./slider.js"
 //INTRO//
 gsap.registerPlugin(ScrollTrigger);
 
@@ -105,18 +106,19 @@ gsap.registerPlugin(ScrollTrigger);
             namespace: "home",
 
             beforeEnter() {
-   gsap.to(loader, {
+              gsap.to(loader, {
                 opacity: 1,
                 duration: 0,
               });
             },
 
-            afterEnter() {
-              gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:3 });
+            afterEnter() { 
+              gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
               $(document).ready(function () {
 
               curtainsmain(smoothScroll);
               chessScene();
+              slider();
               });
             },
 
@@ -132,7 +134,6 @@ gsap.registerPlugin(ScrollTrigger);
           {
             namespace: "agentur",
             beforeEnter() {
-              curtainsAg.clear();
 
             },
 
@@ -284,9 +285,17 @@ gsap.registerPlugin(ScrollTrigger);
       smoothScroll = new LocomotiveScroll({
         el: document.getElementById("page-content"),
         smooth: true,
-        inertia: 0.5,
-        passive: true,
+        inertia: 0.3,
+        mobile: {
+          breakpoint: 0,
+          smooth: true,
+        },
+        tablet: {
+          breakpoint: 0,
+          smooth: true,
+        },
       });
+    
 
       smoothScroll.on("scroll", ScrollTrigger.update);
 
@@ -314,6 +323,40 @@ gsap.registerPlugin(ScrollTrigger);
       if (scrollbar.length > 1) {
         scrollbar[0].remove();
       }
+     
+      // let pinWrap = document.querySelector(".pin-wrap");
+      // let pinWrapWidth = pinWrap.offsetWidth;
+      // let horizontalScrollLength = pinWrapWidth - window.innerWidth;
+    
+      // // Pinning and horizontal scrolling
+    
+      // gsap.to(".pin-wrap", {
+      //   scrollTrigger: {
+      //     scroller: (".smooth-scroll"), //locomotive-scroll
+      //     scrub: true,
+      //     trigger: "#sectionPin",
+      //     pin: true,
+      //     anticipatePin: 1,
+      //     start: "top top",
+      //     end: pinWrapWidth
+      //   },
+      //   x: -horizontalScrollLength,
+      //   ease: "none"
+      // });
+      // gsap.to(".chessCanvas", {
+      //   scrollTrigger: {
+      //     scroller: (".smooth-scroll"), //locomotive-scroll
+      //     scrub: true,
+      //     trigger: ".smooth-scroll",
+  
+      //     start: "top top",
+      //     end: "bottom -100"
+      //   },
+      //   opacity: 0,
+      //   ease: "none"
+      // });
+          
+
 
       // each time the window updates, we should refresh ScrollTrigger and then update LocomotiveScroll.
       ScrollTrigger.addEventListener("refresh", () => smoothScroll.update());
@@ -329,7 +372,7 @@ gsap.registerPlugin(ScrollTrigger);
         id: "tlLoaderIn",
         defaults: {
           duration: 1.1,
-          delay: 2,
+          delay: .5,
           ease: "power2.out",
         },
         onComplete: () => initScript(),
@@ -353,17 +396,14 @@ gsap.registerPlugin(ScrollTrigger);
       });
 
       tlLoaderOut.to(loader, { yPercent: -100 }, 0.2);
-      tlLoaderOut.from('.main', {y: 150}, 0.2);
-      tlLoaderOut.to(".page_wrap", {
-        opacity: 1, duration: .5, delay: 1
+      // tlLoaderOut.from('.main', {y: 150}, 0.2);
 
-      })
       tlLoaderOut.from(".h1_chars_full", {
        stagger:.05,opacity: 0, duration: .7, y:50, 
-      },"-=3")
+      },"-=2")
 
       tlLoaderOut.to(".sub_hero", {
-       opacity: 1, duration: .7, y:50, delay:10
+       opacity: 1, duration: .7, y:50, delay:1
       })
 
       const tlLoader = gsap.timeline();
@@ -387,8 +427,6 @@ gsap.registerPlugin(ScrollTrigger);
   }
 
   $(document).ready(function () {
-
-
   init();
 
   });

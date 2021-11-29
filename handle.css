@@ -2,3 +2,7 @@
 slider > img {
     width: 100% !important;
     }
+
+    .colum_subpages_list > .bt {
+        color: white !important
+    }

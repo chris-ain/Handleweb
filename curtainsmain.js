@@ -22,9 +22,10 @@ export function curtainsmain (smoothScroll) {
 
 
     curtains = new Curtains({
-      container: "canvas",
+      container: document.getElementById("canvas"),
       watchScroll: useNativeScroll, // watch scroll on mobile not on desktop since we're using locomotive scroll
       pixelRatio: Math.min(1.5, window.devicePixelRatio), // limit pixel ratio for performance
+      premultipliedAlpha: true,
     });
 
     
