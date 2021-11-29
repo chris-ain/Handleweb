@@ -257,6 +257,7 @@ class Transition {
 
 		$(".navitem").click(() => {			
 			this.reverse ? this.in() : this.out();
+			menuTl.reversed(!menuTl.reversed());
 
 		});
 
