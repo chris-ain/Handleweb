@@ -1,6 +1,7 @@
 
 import * as THREE from 'https://threejs.org/build/three.module.js';
 
+
 var $hamburger = $('.button');
 gsap.set('.navwrapper',{y:1000});  
 gsap.set('.navitem',{opacity:0, y:-50});  
@@ -213,7 +214,7 @@ class Transition {
 			void main() {
 			  vec2 uv = vUv;
   
-			  uv.y -= ((sin(uv.x * M_PI) * uPower) * .25);
+			  uv.y -= ((sin(uv.x * M_PI*4.0) * uPower) * .25);
   
 			  if (!uOut) uv.y = 1. - uv.y;
   
@@ -243,8 +244,10 @@ class Transition {
 
 		const menuTl = new gsap.timeline({paused:true})
 			menuTl.to('.navwrapper', {opacity: 1, y:0,  duration:0, delay:.5,});
-			menuTl.to('.navitem', {opacity: 1, y:0,  duration:.5, delay:.4, stagger: .06,});
+			menuTl.to('.navitem', {opacity: 1, y:0,  duration:.5, delay:.3, stagger: .06,});
 			menuTl.to('.sm_menu', {opacity:100,  delay:0, duration:.5  });
+			menuTl.to('.menu_line', {xPercent: 100,opacity:100,  delay:0, duration:.5  });
+
 			menuTl.reverse();
 
 		document.querySelector(".button").addEventListener("click", () => {
@@ -261,7 +264,14 @@ class Transition {
 
 		});
 
-	
+
+		$(".link_trans").click(() => {			
+			this.reverse ? this.in() : this.out();
+
+		});
+
+
+		
 	}
 }
 const transition = new Transition();

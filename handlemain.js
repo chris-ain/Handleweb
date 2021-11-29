@@ -1,16 +1,15 @@
 
-import { chessScene, id } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/chess.js";
-import { curtainsmain, curtains } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsmain.js";
-import { projekte, curtainsProj } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/projekte.js";
-import { intro } from "./intro.js";
+import { chessScene, id } from "./chess.js";
+import { curtainsmain, curtains } from "./curtainsmain.js";
+import { projekte, curtainsProj } from "./projekte.js";
 import {
   curtainsAg,
   pl,
   curtainsgenturfunc,
-} from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsagentur.js";
-import { curtainsProjDet, curtainsDet } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsdet.js";
-import { curtainsproundermain, curtainsprounder } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainprounder.js";
-import {slider} from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/slider.js"
+} from "./curtainsagentur.js";
+import { curtainsProjDet, curtainsDet } from "./curtainsdet.js";
+import { curtainsproundermain, curtainsprounder } from "./curtainprounder.js";
+import {slider} from "./slider.js"
 //INTRO//
 gsap.registerPlugin(ScrollTrigger);
 
@@ -151,7 +150,7 @@ gsap.registerPlugin(ScrollTrigger);
                 curtainsAg.clear();
 
 
-              }, 1000);
+              }, );
             },
           },
           /////////// PROJEKTE /////////////////////////
@@ -248,14 +247,14 @@ gsap.registerPlugin(ScrollTrigger);
               initSmoothScroll(data.next.container);
 
               initLoader();
-              intro();
+  
             },
             async leave(data) {
               // animate loading screen in
 
               pageTransitionIn(data.current);
 
-              await delay(2000);
+              // await delay(2000);
 
               data.current.container.remove();
             },
@@ -372,7 +371,7 @@ gsap.registerPlugin(ScrollTrigger);
         id: "tlLoaderIn",
         defaults: {
           duration: 1.1,
-          delay: .5,
+          delay: .2,
           ease: "power2.out",
         },
         onComplete: () => initScript(),
@@ -389,7 +388,7 @@ gsap.registerPlugin(ScrollTrigger);
       const tlLoaderOut = gsap.timeline({
         id: "tlLoaderOut",
         defaults: {
-          delay: 1,
+          delay: .2,
           duration: 1.2,
           ease: "power2.inOut",
         },
@@ -403,7 +402,7 @@ gsap.registerPlugin(ScrollTrigger);
       },"-=2")
 
       tlLoaderOut.to(".sub_hero", {
-       opacity: 1, duration: .7, y:50, delay:1
+       opacity: 1, duration: .7, y:50, delay:0
       })
 
       const tlLoader = gsap.timeline();
