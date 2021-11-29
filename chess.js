@@ -2,7 +2,6 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
 
-
 var Composer;
 let stats, fxaaPass;
 const objects = [];
@@ -15,8 +14,6 @@ export  var scene;
 export var expModel;
 
 export function chessScene(smoothScroll) {
-
-
 
     //===================================================== canvas
     const chessCanvas = document.getElementById("chess");
