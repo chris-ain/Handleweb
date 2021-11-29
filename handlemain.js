@@ -1,15 +1,15 @@
 
-import { chessScene, id } from "./chess.js";
-import { curtainsmain, curtains } from "./curtainsmain.js";
-import { projekte, curtainsProj } from "./projekte.js";
+import { chessScene, id } from "https://raw.githubusercontent.com/chris-ain/Handleweb/master/chess.js";
+import { curtainsmain, curtains } from "https://raw.githubusercontent.com/chris-ain/Handleweb/master/curtainsmain.js";
+import { projekte, curtainsProj } from "https://raw.githubusercontent.com/chris-ain/Handleweb/master/projekte.js";
 import {
   curtainsAg,
   pl,
   curtainsgenturfunc,
 } from "./curtainsagentur.js";
-import { curtainsProjDet, curtainsDet } from "./curtainsdet.js";
-import { curtainsproundermain, curtainsprounder } from "./curtainprounder.js";
-import {slider} from "./slider.js"
+import { curtainsProjDet, curtainsDet } from "https://raw.githubusercontent.com/chris-ain/Handleweb/master/curtainsdet.js";
+import { curtainsproundermain, curtainsprounder } from "https://raw.githubusercontent.com/chris-ain/Handleweb/master/rcurtainprounder.js";
+import {slider} from "https://raw.githubusercontent.com/chris-ain/Handleweb/master/slider.js"
 //INTRO//
 gsap.registerPlugin(ScrollTrigger);
 
