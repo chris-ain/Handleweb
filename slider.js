@@ -1,5 +1,5 @@
     var clientHeight = document.getElementById('clientHeight').clientHeight;
-
+    export var raf;
 
 import * as THREE from 'https://threejs.org/build/three.module.js';
 export function slider (){
@@ -487,6 +487,6 @@ export function slider (){
       gl.render();
       slider.render();
     };
-    
+    raf = tick;
     gsap.ticker.add(tick);
 }

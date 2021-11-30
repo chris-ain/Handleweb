@@ -9,7 +9,7 @@ import {
 } from "./curtainsagentur.js";
 import { curtainsProjDet, curtainsDet } from "./curtainsdet.js";
 import { curtainsproundermain, curtainsprounder } from "./curtainprounder.js";
-import {slider} from "./slider.js"
+// import {slider, raf} from "./slider.js"
 //INTRO//
 gsap.registerPlugin(ScrollTrigger);
 
@@ -115,13 +115,48 @@ gsap.registerPlugin(ScrollTrigger);
               gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
               $(document).ready(function () {
 
+
+            let pinWrap = document.querySelector(".pin-wrap");
+                  let pinWrapWidth = pinWrap.offsetWidth;
+                  let horizontalScrollLength = pinWrapWidth - window.innerWidth;
+                
+                  // Pinning and horizontal scrolling
+                
+                  gsap.to(".pin-wrap", {
+                    scrollTrigger: {
+                      scroller: (".smooth-scroll"), //locomotive-scroll
+                      scrub: true,
+                      trigger: "#sectionPin",
+                      pin: true,
+                      anticipatePin: 10,
+                      start: "top top",
+                      end: pinWrapWidth
+                    },
+                    x: -horizontalScrollLength,
+                    ease: "none"
+                  });
+                  gsap.to(".chessCanvas", {
+                    scrollTrigger: {
+                      scroller: (".smooth-scroll"), //locomotive-scroll
+                      scrub: true,
+                      trigger: ".smooth-scroll",
+              
+                      start: "top top",
+                      end: "bottom -100"
+                    },
+                    opacity: 0,
+                    ease: "none"
+                  });
+
+
               curtainsmain(smoothScroll);
               chessScene();
-              slider();
+              // slider();
               });
             },
 
             beforeLeave(data) {
+              // gsap.ticker.remove(raf);
               cancelAnimationFrame( id );
               curtains.clear();
 
@@ -323,37 +358,7 @@ gsap.registerPlugin(ScrollTrigger);
         scrollbar[0].remove();
       }
      
-      // let pinWrap = document.querySelector(".pin-wrap");
-      // let pinWrapWidth = pinWrap.offsetWidth;
-      // let horizontalScrollLength = pinWrapWidth - window.innerWidth;
-    
-      // // Pinning and horizontal scrolling
-    
-      // gsap.to(".pin-wrap", {
-      //   scrollTrigger: {
-      //     scroller: (".smooth-scroll"), //locomotive-scroll
-      //     scrub: true,
-      //     trigger: "#sectionPin",
-      //     pin: true,
-      //     anticipatePin: 1,
-      //     start: "top top",
-      //     end: pinWrapWidth
-      //   },
-      //   x: -horizontalScrollLength,
-      //   ease: "none"
-      // });
-      // gsap.to(".chessCanvas", {
-      //   scrollTrigger: {
-      //     scroller: (".smooth-scroll"), //locomotive-scroll
-      //     scrub: true,
-      //     trigger: ".smooth-scroll",
-  
-      //     start: "top top",
-      //     end: "bottom -100"
-      //   },
-      //   opacity: 0,
-      //   ease: "none"
-      // });
+      
           
 
 
@@ -398,7 +403,7 @@ gsap.registerPlugin(ScrollTrigger);
       // tlLoaderOut.from('.main', {y: 150}, 0.2);
 
       tlLoaderOut.from(".h1_chars_full", {
-       stagger:.05,opacity: 0, duration: .7, y:50, 
+       stagger:.05,opacity: 0, delay: 0,duration: .7, y:50, 
       },"-=2")
 
       tlLoaderOut.to(".sub_hero", {
