@@ -18,7 +18,6 @@ gsap.registerPlugin(ScrollTrigger);
 
   function init() {
     var imagesLoaded = 0;
-
     const body = document.body;
     const select = (e) => document.querySelector(e);
     const selectAll = (e) => document.querySelectorAll(e);
@@ -69,8 +68,6 @@ gsap.registerPlugin(ScrollTrigger);
         onComplete: () => initScript(),
       });
       tl.to(loader, { yPercent: 100 }).to(loaderMask, { yPercent: -80 }, 0);
-     
-
 
       // .from(container, { y: -150}, 0)
       return tl;
@@ -147,7 +144,6 @@ gsap.registerPlugin(ScrollTrigger);
                     opacity: 0,
                     ease: "none"
                   });
-
 
               curtainsmain(smoothScroll);
               chessScene();
