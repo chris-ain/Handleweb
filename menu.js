@@ -262,13 +262,17 @@ class Transition {
 			menuTl.reversed(!menuTl.reversed());
 
 		});
+		var transLinks = dpcument.querySelectorAll(".link_trans");
+
+		transLinks.forEach(function(){
+			click(() => {			
+				this.reverse ? this.in() : this.out();
+			});
 
 
-		$(".link_trans").click(() => {			
-			this.reverse ? this.in() : this.out();
+		})
 
-		});
-
+		
 
 		
 	}

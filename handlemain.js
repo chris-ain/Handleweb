@@ -125,7 +125,7 @@ gsap.registerPlugin(ScrollTrigger);
                       scrub: true,
                       trigger: "#sectionPin",
                       pin: true,
-                      anticipatePin: 10,
+                      anticipatePin: 1,
                       start: "top top",
                       end: pinWrapWidth
                     },
@@ -155,7 +155,6 @@ gsap.registerPlugin(ScrollTrigger);
               // gsap.ticker.remove(raf);
               cancelAnimationFrame( id );
               curtains.clear();
-
               curtains.dispose();
 
             },
