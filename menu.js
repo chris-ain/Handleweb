@@ -8,16 +8,6 @@ gsap.set('.navitem',{opacity:0, y:-50});
 gsap.set('.sm_menu',{opacity:0})
 gsap.set('.main',{opacity:0})
 
-// var hamburgerMotion = new gsap.timeline()
-// .to('.navitems', {opacity: 1, y: -20,  duration:.5, delay:.3, stagger: .1,},0)
-// .to('.line_menu', {scaleY:1,  delay: 0, duration:.5  },0)
-// .to('.sm_menu', {opacity:100,  delay:0, duration:.5  },0)
-
-// .reverse()
-
-// $hamburger.on('click', function(e) {
-//   hamburgerMotion.reversed(!hamburgerMotion.reversed());
-// });
 
 const menucanvas = document.getElementById("fullscreen");
 function _defineProperty(obj, key, value) {
@@ -60,7 +50,7 @@ class Transition {
 
 				gsap.timeline({
 					paused: true,
-					defaults: { duration: 1.25, ease: "power3.inOut" },
+					defaults: { duration: 1.25, ease: "power3.inOut",  },
 				})
 
 					.to(
@@ -99,7 +89,7 @@ class Transition {
 
 				gsap.timeline({
 					paused: true,
-					defaults: { duration: 1.25, delay:1.3, ease: "power3.inOut" },
+					defaults: { duration: 1.25, delay:2.3, ease: "power3.inOut", },
 				})
 					.clear()
 					.set(uOut, { value: false })
@@ -262,15 +252,15 @@ class Transition {
 			menuTl.reversed(!menuTl.reversed());
 
 		});
-		var transLinks = dpcument.querySelectorAll(".link_trans");
+		var transLinks = document.querySelectorAll(".link_trans");
 
-		transLinks.forEach(function(){
-			click(() => {			
-				this.reverse ? this.in() : this.out();
-			});
+		// transLinks.forEach(function(){
+		// 	click(() => {			
+		// 		this.reverse ? this.in() : this.out();
+		// 	});
 
 
-		})
+		// })
 
 		
 
