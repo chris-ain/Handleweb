@@ -44,7 +44,7 @@ export function curtainsproundermain (smoothScroll) {
     curtainsprounder = new Curtains({
       container: document.getElementById("canvas_projekte_under"),
       watchScroll: useNativeScroll, // watch scroll on mobile not on desktop since we're using locomotive scroll
-      pixelRatio: Math.min(1.5, window.devicePixelRatio), // limit pixel ratio for performance
+      pixelRatio: Math.min(50, window.devicePixelRatio), // limit pixel ratio for performance
     });
 
     

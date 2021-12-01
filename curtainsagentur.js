@@ -21,15 +21,13 @@ export function curtainsgenturfunc (smoothScroll) {
     pl = planes;
     const curtainsAgentur = new Curtains({
       container: document.getElementById("canvastwo"),
-      premultipliedAlpha: true,
+      // premultipliedAlpha: true,
       watchScroll: useNativeScroll, // watch scroll on mobile not on desktop since we're using locomotive scroll
-      pixelRatio: Math.min(1.5, window.devicePixelRatio), // limit pixel ratio for performance
+      pixelRatio: Math.min(50, window.devicePixelRatio), // limit pixel ratio for performance
     });
     curtainsAgentur.clear();
 
     curtainsAg = curtainsAgentur;
-
-
 
     curtainsAgentur
       .onRender(() => {
@@ -46,6 +44,7 @@ export function curtainsgenturfunc (smoothScroll) {
 
         // invert value for the effect
         delta.y = -delta.y;
+
 
         // threshold
         if (delta.y > 60) {

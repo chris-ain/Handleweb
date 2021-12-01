@@ -2,19 +2,15 @@
 import { chessScene, id } from "./chess.js";
 import { curtainsmain, curtains } from "./curtainsmain.js";
 import { projekte, curtainsProj } from "./projekte.js";
-import {
-  curtainsAg,
-  pl,
-  curtainsgenturfunc,
-} from "./curtainsagentur.js";
+import { curtainsAg, pl, curtainsgenturfunc, } from "./curtainsagentur.js";
 import { curtainsProjDet, curtainsDet } from "./curtainsdet.js";
 import { curtainsproundermain, curtainsprounder } from "./curtainprounder.js";
 // import {slider, raf} from "./slider.js"
-//INTRO//
+
+
 gsap.registerPlugin(ScrollTrigger);
 
 //MAIN//
-
 
   function init() {
     var imagesLoaded = 0;
@@ -109,9 +105,8 @@ gsap.registerPlugin(ScrollTrigger);
             },
 
             afterEnter() { 
-              gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
               $(document).ready(function () {
-
+                gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
 
             let pinWrap = document.querySelector(".pin-wrap");
                   let pinWrapWidth = pinWrap.offsetWidth;
@@ -121,7 +116,7 @@ gsap.registerPlugin(ScrollTrigger);
                 
                   gsap.to(".pin-wrap", {
                     scrollTrigger: {
-                      scroller: (".smooth-scroll"), //locomotive-scroll
+                      scroller: (".smooth-scroll"),
                       scrub: true,
                       trigger: "#sectionPin",
                       pin: true,
@@ -134,10 +129,9 @@ gsap.registerPlugin(ScrollTrigger);
                   });
                   gsap.to(".chessCanvas", {
                     scrollTrigger: {
-                      scroller: (".smooth-scroll"), //locomotive-scroll
+                      scroller: (".smooth-scroll"),
                       scrub: true,
                       trigger: ".smooth-scroll",
-              
                       start: "top top",
                       end: "bottom -100"
                     },
@@ -163,12 +157,11 @@ gsap.registerPlugin(ScrollTrigger);
           {
             namespace: "agentur",
             beforeEnter() {
-
             },
 
             afterEnter() {
               $(document).ready(function () {
-
+              gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
               curtainsgenturfunc(smoothScroll);
 
               });
@@ -178,8 +171,6 @@ gsap.registerPlugin(ScrollTrigger);
               setTimeout(function () {
                 curtainsAg.dispose();
                 curtainsAg.clear();
-
-
               }, );
             },
           },
@@ -187,61 +178,63 @@ gsap.registerPlugin(ScrollTrigger);
           {
             namespace: "projekte",
             beforeEnter() {
-              // gsap.to(loader, {
-              //   opacity: 1,
-              //   duration: 0,
-              // });
-
             },
 
             afterEnter() {
-              // projekte(smoothScroll);
-              curtainsproundermain(smoothScroll);
+              $(document).ready(function () {
+                gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+                curtainsproundermain(smoothScroll);
+              });
             },
 
             beforeLeave(data) {
               setTimeout(function () {
               // curtainsProj.dispose();
               curtainsprounder.dispose();
-            }, 1000);
 
-              // gsap.to(loader, {
-              //   opacity: 0,
-              //   duration: 0,
-              // });
+            });
             },
           },
           /////////// PROJEKTDETAIL /////////////////////////
           {
             namespace: "projektdetail",
             beforeEnter() {
-              // gsap.to(loader, {
-              //   opacity: 0,
-              //   duration: 0,
-              // });
+
             },
             afterEnter() {
+
               $(document).ready(function () {
-                // When we begin, assume no images are loaded.
-                // Count the total number of images on the page when the page has loaded.
-                var totalImages = $("img").length;
-
-                // After an image is loaded, add to the count, and if that count equals the
-                // total number of images, fire the allImagesLoaded() function.
-                $("img").on("load", function (event) {
-                  imagesLoaded++;
-                  if (imagesLoaded == totalImages) {
-                    allImagesLoaded();
+                gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+ 
+         
+                  // Images loaded is zero because we're going to process a new set of images.
+                  var imagesLoaded = 0
+                  // Total images is still the total number of <img> elements on the page.
+                  var totalImages = $("img").length
+                
+                  // Step through each image in the DOM, clone it, attach an onload event
+                  // listener, then set its source to the source of the original image. When
+                  // that new image has loaded, fire the imageLoaded() callback.
+                  $("img").each(function (idx, img) {
+                    $("<img>").on("load", imageLoaded).attr("src", $(img).attr("src"))
+                  })
+                
+                  // Do exactly as we had before -- increment the loaded count and if all are
+                  // loaded, call the allImagesLoaded() function.
+                  function imageLoaded() {
+                    imagesLoaded++
+                    if (imagesLoaded == totalImages) {
+                      allImagesLoaded()
+                    }
                   }
-                });
+                
+                  function allImagesLoaded() {
+                    curtainsProjDet(smoothScroll);
+                  }
+           
 
-                function allImagesLoaded() {
-                  console.log("ALL IMAGES LOADED");
-                }
 
-                $.when(allImagesLoaded()).then(function () {
-                  curtainsProjDet(smoothScroll);
-                });
+            
               });
 
               gsap.to(".img_fullscreen", {
@@ -252,21 +245,79 @@ gsap.registerPlugin(ScrollTrigger);
             },
 
             beforeLeave(data) {
-              // gsap.to(loader, {
-              //   opacity: 0,
-              //   duration: 0,
-              // });
-
               setTimeout(function () {         
                 curtainsDet.dispose();     
-              }, 2000);
+              });
             },
           },
+
+        /////////// Jobs /////////////////////////
+        {
+          namespace: "jobs",
+          beforeEnter() {
+          },
+          afterEnter() {
+            $(document).ready(function () {
+              gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+            });
+          },
+
+          beforeLeave(data) {
+            setTimeout(function () {         
+           
+            });
+          },
+        },
+
+           /////////// Kontakt /////////////////////////
+           {
+            namespace: "kontakt",
+            beforeEnter() {
+            },
+            afterEnter() {
+              $(document).ready(function () {
+                gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+              });
+  
+            },
+  
+            beforeLeave(data) {
+              setTimeout(function () {         
+             
+              });
+            },
+          },
+               /////////// Logofolio /////////////////////////
+           {
+            namespace: "logofolio",
+            beforeEnter() {
+            },
+            afterEnter() {
+              $(document).ready(function () {
+                gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+              });
+  
+            },
+  
+            beforeLeave(data) {
+              setTimeout(function () {         
+             
+              });
+            },
+          },
+
+        
+
+
         ],
+
+        
+
+      
 
         /////////// TRANSITIONS /////////////////////////
 
-        sync: true,
+        // sync: true,
         debug: true,
         // timeout: 7000,
         transitions: [
@@ -314,7 +365,9 @@ gsap.registerPlugin(ScrollTrigger);
       smoothScroll = new LocomotiveScroll({
         el: document.getElementById("page-content"),
         smooth: true,
-        inertia: 0.3,
+        inertia: 0.5,
+        multiplier: 1.5,
+        reloadOnContextChange: true,
         mobile: {
           breakpoint: 0,
           smooth: true,
@@ -325,7 +378,6 @@ gsap.registerPlugin(ScrollTrigger);
         },
       });
     
-
       smoothScroll.on("scroll", ScrollTrigger.update);
 
       ScrollTrigger.scrollerProxy(".smooth-scroll", {
@@ -347,20 +399,13 @@ gsap.registerPlugin(ScrollTrigger);
           ? "transform"
           : "fixed",
       });
-      const scrollbar = selectAll(".c-scrollbar");
 
+      const scrollbar = selectAll(".c-scrollbar");
       if (scrollbar.length > 1) {
         scrollbar[0].remove();
       }
-     
-      
-          
 
-
-      // each time the window updates, we should refresh ScrollTrigger and then update LocomotiveScroll.
       ScrollTrigger.addEventListener("refresh", () => smoothScroll.update());
-
-      // after everything is set up, refresh() ScrollTrigger and update LocomotiveScroll because padding may have been added for pinning, etc.
       ScrollTrigger.refresh();
     }
 
@@ -397,13 +442,13 @@ gsap.registerPlugin(ScrollTrigger);
       tlLoaderOut.to(loader, { yPercent: -100 }, 0.2);
       // tlLoaderOut.from('.main', {y: 150}, 0.2);
 
-      tlLoaderOut.from(".h1_chars_full", {
-       stagger:.05,opacity: 0, delay: 0,duration: .7, y:50, 
-      },"-=2")
+      // tlLoaderOut.from(".h1_chars_full", {
+      //  stagger:.05,opacity: 0, delay: 0,duration: .7, y:50, 
+      // })
 
-      tlLoaderOut.to(".sub_hero", {
-       opacity: 1, duration: .7, y:50, delay:0
-      })
+      // tlLoaderOut.to(".sub_hero", {
+      //  opacity: 1, duration: .7, y:50, delay:0
+      // })
 
       const tlLoader = gsap.timeline();
       tlLoader.add(tlLoaderIn).add(tlLoaderOut);

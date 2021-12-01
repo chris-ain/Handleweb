@@ -169,7 +169,6 @@ class Transition {
 		this.renderer.setPixelRatio(1);
 		this.renderer.setSize(_ww, _wh);
 		this.renderer.setClearColor(0xffffff, 0);
-		renderer.context.getExtension('OES_standard_derivatives');
 		this.scene = new THREE.Scene();
 		this.camera = new THREE.OrthographicCamera(
 			_ww / -2,
