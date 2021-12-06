@@ -8,6 +8,7 @@ const objects = [];
 const selects = [];
 let gui;
 const spheres = [];
+var texLoader = new THREE.TextureLoader();
 
 export var id;
 export  var scene;
@@ -23,7 +24,7 @@ export function chessScene(smoothScroll) {
 
     //===================================================== scene
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2( 0x741111,.15, 100 );
+    scene.fog = new THREE.FogExp2( 0x090909,.15, 100 );
 
     // ////
     // const paramsts = {
@@ -40,8 +41,7 @@ export function chessScene(smoothScroll) {
     reflectionCube.mapping = THREE.EquirectangularReflectionMapping;
     refractionCube.mapping = THREE.EquirectangularRefractionMapping;
     scene.environment = reflectionCube;
-    // texLoader = new THREE.TextureLoader();
-    // var normal = texLoader.load( 'https://uploads-ssl.webflow.com/612d2c01db57a270ec502b3f/61885cd22ccdfed3d95febbf_download.jpg');
+    var normal = texLoader.load( 'https://uploads-ssl.webflow.com/612d2c01db57a270ec502b3f/61885cd22ccdfed3d95febbf_download.jpg');
 
     //===================================================== camera
     
@@ -74,10 +74,10 @@ export function chessScene(smoothScroll) {
    
    
    
-    var lightamb = new THREE.AmbientLight(0xf7f7f7, 0.1);
+    var lightamb = new THREE.AmbientLight(0xf7f7f7, 0.3);
     scene.add(lightamb);
-    var light2 = new THREE.DirectionalLight(0xef7f7f7);
-    light2.position.set(1, 1, .1).normalize();
+    var light2 = new THREE.DirectionalLight(0xef7f7f7,10);
+    light2.position.set(1, 1, 1).normalize();
     scene.add(light2);
     light2.shadow.camera = new THREE.OrthographicCamera(
       100,
@@ -88,7 +88,7 @@ export function chessScene(smoothScroll) {
       0.1
     );
     light2.castShadow = true;
-    var light3 = new THREE.SpotLight(0xf7f7f7, .1);
+    var light3 = new THREE.SpotLight(0xf7f7f7,10);
     light3.position.set(-1, -1, -1).normalize();
     scene.add(light3);
     
@@ -102,7 +102,6 @@ export function chessScene(smoothScroll) {
 		};
 
 
-    const groupBubbles = new THREE.Group();
 
 
     const materialTrans = new THREE.MeshPhysicalMaterial({
@@ -131,9 +130,7 @@ export function chessScene(smoothScroll) {
 
       mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * .4 +0;
 
-      groupBubbles.add( mesh );
-      // scene.add(groupBubbles)
-
+    
       spheres.push( mesh );
 
     }
@@ -142,6 +139,50 @@ export function chessScene(smoothScroll) {
     
      //===================================================== model
 
+     var normal = texLoader.load( 'https://uploads-ssl.webflow.com/612d2c01db57a270ec502b3f/61885cd22ccdfed3d95febbf_download.jpg');
+ 
+
+
+
+     const materialmat = new THREE.MeshMatcapMaterial({
+       normalMap: normal,
+       normalScale: new THREE.Vector2( .04, .04 ),
+ 
+     })
+ 
+     const matcapTexture = texLoader.load('https://uploads-ssl.webflow.com/612d2c01db57a270ec502b3f/618554e0f8540f80a52aaf77_images.jpg')
+     materialmat.matcap = matcapTexture
+ 
+     const materialmat2 = new THREE.MeshMatcapMaterial({
+       normalMap: normal,
+       normalScale: new THREE.Vector2( .04, .04 ),
+ 
+     })
+ 
+     const matcapTexture2 = texLoader.load('https://uploads-ssl.webflow.com/612d2c01db57a270ec502b3f/6185565a02d38140d4f7320d_images-1.jpg')
+     materialmat2.matcap = matcapTexture2
+ 
+ 
+     var materialwhite = new THREE.MeshPhysicalMaterial({
+       roughness: 0,
+       transmission: 1,
+       thickness: 5,
+       // envMap: reflectionCube, 
+       // envMapIntensity:.2     
+ 
+     });
+     
+ 
+     var materialcool =   new THREE.MeshPhysicalMaterial({
+       color: 0xffffff,
+ 
+       roughness: .25,
+       transmission: 1,
+       thickness: 4,
+       envMap: reflectionCube,      
+      envMapIntensity:.2     
+     });
+ 
 
 
 
@@ -155,7 +196,7 @@ const group = new THREE.Group();
 
 
 loader.load(
-  "https://raw.githubusercontent.com/chris-ain/handlefinal/main/chess_board21.glb",
+  "https://raw.githubusercontent.com/chris-ain/Handleweb/master/models/chess_board_bake4.glb",
   function (gltf) {
     gltf.castShadow = true;
     gltf.receiveShadow = true;
@@ -164,21 +205,61 @@ loader.load(
       if (node instanceof THREE.Mesh) {
         node.castShadow = true;
         node.receiveShadow = true;
-        node.material.side = THREE.DoubleSide;
-        selects.push(node);
-        objects.push(node);
       }
     });
 
+    
+    // gltf.scene.children
+    // .filter((child) => child.name.includes("Cube"))
+    // .forEach((mesh) => {
+    //   mesh.material = materialTrans;      
+
+    // });
+
+    // gltf.scene.children
+    // .filter((child) => child.name.includes("Mesh"))
+    // .forEach((mesh) => {
+    //   mesh.material = materialTrans;      
+
+    // });
+
+    gltf.scene.children
+    .filter((child) => child.name.includes("weiss"))
+    .forEach((mesh) => {
+      mesh.material = materialcool;      
+
+    });
+
+  
+    
     model = gltf.scene;
     expModel = gltf.scene;
-    group.scale.set(0.31, 0.31, 0.31);
-    group.position.set(0,.65, 0);
-    // group.rotation.set(Math.PI /7, 0, 0);
+    model.position.set(0,-.01, 0);
 
+    group.scale.set(0.31, 0.31, 0.31);
+    group.position.set(0,.5, 0);
+
+    group.rotation.set(0,-Math.PI/2, 0);
     group.add( model);
     scene.add( group );
 
+
+    
+    mixer = new THREE.AnimationMixer(model);
+    mixer.timeScale = 1;
+
+    var action = mixer.clipAction(gltf.animations[1]);
+    clips=gltf.animations;
+
+    clips.forEach(element => {
+      mixer.clipAction( element ).play();
+    });
+
+    clips.paused= true;
+    createAnimation(mixer, action, gltf.animations[1]);
+    // model.material.needsUpdate = true;
+  
+    
     mixer = new THREE.AnimationMixer(model);
     mixer.timeScale = 1;
 
@@ -203,126 +284,15 @@ loader.load(
      //===================================================== Postprocessing
     
 
-    //  const pixelRatio = renderer.getPixelRatio();
-
-    
-    
-    // const paramsts = {
-		// 	enableSSRr: true,
-		// 	autoRotate: true,
-		// };
-    // let composer;
-		// let ssrrPass;
-    // const renderScene = new rpass( scene, camera );
-
-
-    // composer = new EffectComposer( renderer );
-    // // composer.addPass( new spass( GammaCorrectionShader ) );
-
-    // composer.addPass( renderScene );
-    // const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
-		// 		bloomPass.threshold = paramst.bloomThreshold;
-		// 		bloomPass.strength = paramst.bloomStrength;
-		// 		bloomPass.radius = paramst.bloomRadius;
-    // // composer.addPass( bloomPass );
-   
-   
-   
-    // ssrrPass = new SSRrPass( {
-    //   renderer,
-    //   scene,
-    //   camera,
-    //   width: innerWidth,
-    //   height: innerHeight,
-    //   selects: selects
-    // } );
-
-    // composer.addPass( ssrrPass );
-
-    // fxaaPass = new spass( FXAAShader );
-
-    // fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( container.offsetWidth * pixelRatio );
-    // fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( container.offsetHeight * pixelRatio );
-	// const copyPass = new spass( CopyShader );
-      // composer.addPass( ssrrPass );
-
-
-    
-  // // GUI
-
-  // gui = new GUI();
-  // gui.add( paramst, 'enableSSRr' ).name( 'Enable SSRr' );
-  // ssrrPass.ior = 1.1;
-  // gui.add( ssrrPass, 'ior' ).name( 'IOR' ).min( .1 ).max( 1.5 ).step( .0001 );
-  // gui.add( ssrrPass, 'fillHole' );
-  // gui.add( paramst, 'autoRotate' ).onChange( () => {
-
-
-  // } );
-
-  // gui.add( paramst, 'exposure', 0.1, 2 ).onChange( function ( value ) {
-
-  //   renderer.toneMappingExposure = Math.pow( value, 4.0 );
-
-  // } );
-
-  // gui.add( paramst, 'bloomThreshold', 0.0, 1.0 ).onChange( function ( value ) {
-
-  //   bloomPass.threshold = Number( value );
-
-  // } );
-
-  // gui.add( paramst, 'bloomStrength', 0.0, 3.0 ).onChange( function ( value ) {
-
-  //   bloomPass.strength = Number( value );
-
-  // } );
-
-  // gui.add( paramst, 'bloomRadius', 0.0, 1.0 ).step( 0.01 ).onChange( function ( value ) {
-
-  //   bloomPass.radius = Number( value );
-
-  // } );
-
-  // const folder = gui.addFolder( 'more settings' );
-  // folder.add( ssrrPass, 'specular' );
-  // folder.add( ssrrPass.specularMaterial, 'metalness' ).min( 0 ).max( 10 ).step( .01 );
-  // folder.add( ssrrPass.specularMaterial, 'roughness' ).min( 0 ).max( 10 ).step( .01 );
-  // folder.add( ssrrPass, 'output', {
-  //   'Default': SSRrPass.OUTPUT.Default,
-  //   'SSRr Only': SSRrPass.OUTPUT.SSRr,
-  //   'Beauty': SSRrPass.OUTPUT.Beauty,
-  //   'Depth': SSRrPass.OUTPUT.Depth,
-  //   'DepthSelects': SSRrPass.OUTPUT.DepthSelects,
-  //   'NormalSelects': SSRrPass.OUTPUT.NormalSelects,
-  //   'Refractive': SSRrPass.OUTPUT.Refractive,
-  //   'Specular': SSRrPass.OUTPUT.Specular,
-  // } ).onChange( function ( value ) {
-
-  //   ssrrPass.output = parseInt( value );
-
-  // } );
-  // ssrrPass.surfDist = 0.0015;
-  // // folder.add( ssrrPass, 'surfDist' ).min( 0 ).max( .005 ).step( .0001 );
-  // ssrrPass.maxDistance = 50;
-  // // folder.add( ssrrPass, 'maxDistance' ).min( 0 ).max( 100 ).step( .001 );
-  // // folder.add( ssrrPass, 'infiniteThick' );
-  // // folder.open()
-  // // gui.close()
-
 
   //   //===================================================== resize
     window.addEventListener("resize", function () {
       let width = window.innerWidth;
       let height = window.innerHeight;
-      // renderer.setSize(width, height);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
-      // Composer.setSize(canvas.clientWidth, canvas.clientHeight);
       const pixelRatio = renderer.getPixelRatio();
 
-      // fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( container.offsetWidth * pixelRatio );
-      // fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( container.offsetHeight * pixelRatio );
     });
 
 
@@ -367,24 +337,18 @@ loader.load(
 
 
 
-    // var plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
-    // // scene.add(new THREE.PlaneHelper( plane, 100, 0xffff00 ));
-    
-    
-    
 
-
-    // var mouse = new THREE.Vector2();
-    // var raycaster = new THREE.Raycaster();
-    // var intersects = new THREE.Vector3();
+    var mouse = new THREE.Vector2();
+    var raycaster = new THREE.Raycaster();
+    var intersects = new THREE.Vector3();
     
-    // function onMouseMove(e) {
-    //   mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    //   mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-    //   raycaster.setFromCamera(mouse, camera);
-    //   raycaster.ray.intersectPlane(plane, intersects);
-    //   sphere.position.set(intersects.x, intersects.y, intersects.z);
-    // }
+    function onMouseMove(e) {
+      mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+      mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      raycaster.ray.intersectPlane(plane, intersects);
+      model.position.set(intersects.x, intersects.y, intersects.z);
+    }
     
 
 
@@ -392,12 +356,12 @@ loader.load(
     renderer.setClearColor( 0x000000, 0 );
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    // renderer.toneMappingExposure = .8;
-    // renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    // renderer.shadowMap.enabled = true;
-    // renderer.physicallyCorrectLights;
-    // renderer.outputEncoding = THREE.sRGBEncoding;
-    // renderer.gammaFactor = 5;
+    renderer.toneMappingExposure = 1;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.shadowMap.enabled = true;
+    renderer.physicallyCorrectLights;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.gammaFactor = 5;
 
 
   
@@ -512,32 +476,6 @@ onUpdate: function () {
 
   });
 
-
-
-//   let scrollingTL5 = gsap.timeline({
-//     scrollTrigger: {
-//       trigger: ".smooth-scroll",
-//       scroller: ".smooth-scroll",
-//       start: "top top",
-//       endtrigger: "#intro",
-//       pin: true,
-//       scrub: true,
-//         ease: Power3.easeInOut,
-// onUpdate: function () {
-//         camera.updateProjectionMatrix();
-//       }
-//     }
-//   }, );
-
-  
-
-//     scrollingTL5.to('.hero_head', {
-//       scale:0,
-//     opacity:0,
-
-//   });
-
-  // $(gui.domElement).attr("hidden", true);
 
 
 }

@@ -1,7 +1,7 @@
 
 import * as THREE from 'https://threejs.org/build/three.module.js';
 
-
+export var trans;
 var $hamburger = $('.button');
 gsap.set('.navwrapper',{y:1000});  
 gsap.set('.navitem',{opacity:0, y:-50});  
@@ -89,7 +89,7 @@ class Transition {
 
 				gsap.timeline({
 					paused: true,
-					defaults: { duration: 1.25, delay:2.3, ease: "power3.inOut", },
+					defaults: { duration: 1.25, delay:2.5, ease: "power3.inOut", },
 				})
 					.clear()
 					.set(uOut, { value: false })
@@ -262,7 +262,11 @@ class Transition {
 
 		// })
 
-		
+		$(".link_trans").click(() => {			
+			this.reverse ? this.in() : this.out();
+			menuTl.reversed(!menuTl.reversed());
+
+		});
 
 		
 	}
@@ -300,6 +304,8 @@ window.addEventListener("load", function() {
 		 }, 500);
   });
 
+
+trans = transition;
 /*--------------------
    Touch
    --------------------*/

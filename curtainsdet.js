@@ -3,23 +3,7 @@ export var curtainsDet;
     
 
 export function curtainsProjDet (smoothScroll){
-    $(document).ready(function () {
 
-
-    var imagesLoaded = 0;
-
-
-      // When we begin, assume no images are loaded.
-      // Count the total number of images on the page when the page has loaded.
-      var totalImages = $("img").length
-    
-      // After an image is loaded, add to the count, and if that count equals the
-      // total number of images, fire the allImagesLoaded() function.
-      $("img").on("load", function (event) {
-        imagesLoaded++
-        if (imagesLoaded == totalImages) {
-        }
-      })
 
 
    let useNativeScroll;
@@ -37,7 +21,7 @@ export function curtainsProjDet (smoothScroll){
     curtainsDet = new Curtains({
         container: document.getElementById("canvas_proj_det"),
         watchScroll: useNativeScroll, // watch scroll on mobile not on desktop since we're using locomotive scroll
-        pixelRatio: Math.min(50, window.devicePixelRatio), // limit pixel ratio for performance
+        pixelRatio: Math.min(1.5, window.devicePixelRatio), // limit pixel ratio for performance
         autoRender: false, // use gsap ticker to render our scene
     });
 
@@ -256,6 +240,7 @@ if(!useNativeScroll) {
             plane.htmlElement.addEventListener("click", (e) => {
               smoothScroll.stop();
               smoothScroll.destroy();
+
                 onPlaneClick(e, plane,);
                 gsap.to(".smooth-scroll", {
                     opacity: 0,
@@ -264,7 +249,6 @@ if(!useNativeScroll) {
                 });
              
 
-                document.body.style.overflow ="hidden";
               
                 
 
@@ -307,7 +291,7 @@ if(!useNativeScroll) {
 
     const galleryState = {
         fullscreenThumb: false, // is actually displaying a fullscreen image
-        closeButtonEl: document.getElementById("close-button"), // close button element
+        closeButtonEl: document.getElementById("close"), // close button element
      
         openTween: null, // opening tween
         closeTween: null, // closing tween
@@ -316,7 +300,6 @@ if(!useNativeScroll) {
     // on closing a fullscreen image
     galleryState.closeButtonEl.addEventListener("click", () => {
         const fullScreenPlane = curtainsDet.planes.find(plane => plane.userData.isFullscreen);
-
 
         // if there's a plane actually displayed fullscreen, we'll be shrinking it back to normal
         if(fullScreenPlane && galleryState.fullscreenThumb) {
@@ -396,7 +379,7 @@ if(!useNativeScroll) {
                 }
             });
         }
-    },2000);
+    });
 
     function onPlaneClick(event, plane) {
         canvasclick = document.getElementById("canvas_proj"); // close button element
@@ -776,7 +759,7 @@ if(!useNativeScroll) {
         const fxaaPass = new FXAAPass(curtainsDet);
     });
 
-})
+
 
 
     

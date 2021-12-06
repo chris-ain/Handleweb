@@ -1,4 +1,3 @@
-    var clientHeight = document.getElementById('clientHeight').clientHeight;
     export var raf;
 
 import * as THREE from 'https://threejs.org/build/three.module.js';
@@ -141,7 +140,7 @@ export function slider (){
         fromTo('.tit', {
           xPercent: 0 },
         {
-          xPercent: -100 -(100/items.length) -487},
+          xPercent: -100 -(100/items.length +600)},
         0).
         fromTo('.js-progress-line', {
           scaleX: 0 },

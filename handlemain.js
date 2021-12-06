@@ -5,10 +5,21 @@ import { projekte, curtainsProj } from "./projekte.js";
 import { curtainsAg, pl, curtainsgenturfunc, } from "./curtainsagentur.js";
 import { curtainsProjDet, curtainsDet } from "./curtainsdet.js";
 import { curtainsproundermain, curtainsprounder } from "./curtainprounder.js";
-// import {slider, raf} from "./slider.js"
+import { trans } from "./menu.js";
+// import { sliderHome } from "./sliderNew.js"
+import {slider, raf} from "./slider.js"
 
-
-window.addEventListener("load", function(event) {
+// $(window).on('load', function(){
+//   $('.plane_img').each(function(){
+//       $(this).removeAttr('sizes');
+//       $(this).removeAttr('srcset');
+//   });
+//   $('.proj_img_home_wrap').each(function(){
+//     $(this).removeAttr('sizes');
+//     $(this).removeAttr('srcset');
+// });
+// });
+window.addEventListener("load", function() {
 gsap.registerPlugin(ScrollTrigger);
 
 //MAIN//
@@ -106,44 +117,66 @@ gsap.registerPlugin(ScrollTrigger);
             },
 
             afterEnter() { 
-              $(document).ready(function () {
+           
+          
                 gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
 
-            let pinWrap = document.querySelector(".pin-wrap");
-                  let pinWrapWidth = pinWrap.offsetWidth;
-                  let horizontalScrollLength = pinWrapWidth - window.innerWidth;
+            // let pinWrap = document.querySelector(".pin-wrap");
+            //       let pinWrapWidth = pinWrap.offsetWidth;
+            //       let horizontalScrollLength = pinWrapWidth - window.innerWidth;
                 
                   // Pinning and horizontal scrolling
                 
-                  gsap.to(".pin-wrap", {
-                    scrollTrigger: {
-                      scroller: (".smooth-scroll"),
-                      scrub: true,
-                      trigger: "#sectionPin",
-                      pin: true,
-                      anticipatePin: 1,
-                      start: "top top",
-                      end: pinWrapWidth
-                    },
-                    x: -horizontalScrollLength,
-                    ease: "none"
-                  });
-                  gsap.to(".chessCanvas", {
-                    scrollTrigger: {
-                      scroller: (".smooth-scroll"),
-                      scrub: true,
-                      trigger: ".smooth-scroll",
-                      start: "top top",
-                      end: "bottom -100"
-                    },
-                    opacity: 0,
-                    ease: "none"
-                  });
+                  // gsap.to(".pin-wrap", {
+                  //   scrollTrigger: {
+                  //     scroller: (".smooth-scroll"),
+                  //     scrub: true,
+                  //     trigger: "#sectionPin",
+                  //     pin: true,
+                  //     anticipatePin: 0,
+                  //     start: "top top",
+                  //     end: pinWrapWidth,
+                  //     ease: "none"
+                  //   },
+                  //   x: -horizontalScrollLength,
+                  //   ease: "none"
+                  // });
+                  // gsap.to(".chessCanvas", {
+                  //   scrollTrigger: {
+                  //     scroller: (".smooth-scroll"),
+                  //     scrub: true,
+                  //     trigger: ".smooth-scroll",
+                  //     start: "top top",
+                  //     end: "bottom -100"
+                  //   },
+                  //   opacity: 0,
+                  //   ease: "none"
+                  // });
+                
 
+                  // let scrollingTL = gsap.timeline({
+                  //   scrollTrigger: {
+                  //     trigger: ".smooth-scroll",
+                  //     scroller: ".smooth-scroll",
+                  //     start: "top top",
+                  //     end: "bottom bottom",
+                  //     pin: true,
+                  //     scrub: true,
+                  //     ease: "none",
+                      
+                  //   }
+                  // });
+            
+                  // scrollingTL.to(".scroll_indicator_line", {
+                  //   xPercent: 100,
+              
+                  // });
+            
+              
               curtainsmain(smoothScroll);
               chessScene();
-              // slider();
-              });
+              slider();
+        
             },
 
             beforeLeave(data) {
@@ -169,10 +202,10 @@ gsap.registerPlugin(ScrollTrigger);
             },
 
             beforeLeave(data) {
-              setTimeout(function () {
+            
                 curtainsAg.dispose();
                 curtainsAg.clear();
-              });
+           
             },
           },
           /////////// PROJEKTE /////////////////////////
@@ -186,6 +219,12 @@ gsap.registerPlugin(ScrollTrigger);
                 gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
                 curtainsproundermain(smoothScroll);
               });
+              $(".plane_test").click(() => {		
+                trans.out();	
+                trans.in();	
+
+          
+              });
             },
 
             beforeLeave(data) {
@@ -193,6 +232,7 @@ gsap.registerPlugin(ScrollTrigger);
               setTimeout(function () {
               // curtainsProj.dispose();
               curtainsprounder.dispose();
+              
 
             },1000);
             },
@@ -227,7 +267,7 @@ gsap.registerPlugin(ScrollTrigger);
             beforeLeave(data) {
               setTimeout(function () {         
                 curtainsDet.dispose();     
-              },2250);
+              },2000);
             },
           },
 
@@ -243,9 +283,7 @@ gsap.registerPlugin(ScrollTrigger);
           },
 
           beforeLeave(data) {
-            setTimeout(function () {         
-           
-            });
+         
           },
         },
 
@@ -262,9 +300,7 @@ gsap.registerPlugin(ScrollTrigger);
             },
   
             beforeLeave(data) {
-              setTimeout(function () {         
-             
-              });
+        
             },
           },
                /////////// Logofolio /////////////////////////
@@ -280,9 +316,7 @@ gsap.registerPlugin(ScrollTrigger);
             },
   
             beforeLeave(data) {
-              setTimeout(function () {         
-             
-              });
+          
             },
           },
 
@@ -451,6 +485,7 @@ gsap.registerPlugin(ScrollTrigger);
   init();
 
   });
+
 
 
 

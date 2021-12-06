@@ -170,47 +170,6 @@ export function chessScene(smoothScroll) {
     // light3.target = targetObject;
     // light2.target = targetObject;
  
- 
-//////////FIREFLIES////////////////////////
-
-    const firefliesGeometry = new THREE.BufferGeometry();
-    const firefliesCount = 500;
-    const positionArray = new Float32Array(firefliesCount * 3);
-    const scaleArray = new Float32Array(firefliesCount);
-    for (let i = 0; i < firefliesCount; i++) {
-      new THREE.Vector3(
-      (Math.random() - 0.5) * 4,
-      Math.random() * 1.5,
-      (Math.random() - 0.5) * 4).
-      toArray(positionArray, i * 3);
-      scaleArray[i] = Math.random();
-      scaleArray[i] = Math.random();
-      
-    }
-    firefliesGeometry.setAttribute(
-    "position",
-    new THREE.BufferAttribute(positionArray, 3));
-
-    firefliesGeometry.setAttribute(
-    "aScale",
-    new THREE.BufferAttribute(scaleArray, 1));
-
-    const firefliesMaterial = new THREE.ShaderMaterial({
-      vertexShader: firefliesVertexShader,
-    fragmentShader: firefliesFragmentShader,
-      transparent: true,
-      uniforms: {
-        scroll: {value: 0},
-        uTime: { value: 0 },
-        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
-        uSize: { value: 100 }
-      },
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
-    });
-    
-    const fireflies = new THREE.Points(firefliesGeometry, firefliesMaterial);
-    scene.add(fireflies);
 
 
     var normal = texLoader.load( 'https://uploads-ssl.webflow.com/612d2c01db57a270ec502b3f/61885cd22ccdfed3d95febbf_download.jpg');
@@ -305,12 +264,12 @@ const bgMaterial = new THREE.MeshBasicMaterial({ map: bgTexture });
     });
 
     
-    gltf.scene.children
-    .filter((child) => child.name.includes("Cube"))
-    .forEach((mesh) => {
-      mesh.material = materialTrans;      
+    // gltf.scene.children
+    // .filter((child) => child.name.includes("Cube"))
+    // .forEach((mesh) => {
+    //   mesh.material = materialTrans;      
 
-    });
+    // });
 
     gltf.scene.children
     .filter((child) => child.name.includes("Mesh"))
@@ -319,12 +278,12 @@ const bgMaterial = new THREE.MeshBasicMaterial({ map: bgTexture });
 
     });
 
-    gltf.scene.children
-    .filter((child) => child.name.includes("weiss"))
-    .forEach((mesh) => {
-      mesh.material = materialmat;      
+    // gltf.scene.children
+    // .filter((child) => child.name.includes("weiss"))
+    // .forEach((mesh) => {
+    //   mesh.material = materialmat;      
 
-    });
+    // });
 
   
     
@@ -399,6 +358,53 @@ function createPlane(){
   planeBackground.position.set(0,0,-180)
 
 }
+
+
+
+ 
+//////////FIREFLIES////////////////////////
+
+const firefliesGeometry = new THREE.BufferGeometry();
+const firefliesCount = 500;
+const positionArray = new Float32Array(firefliesCount * 3);
+const scaleArray = new Float32Array(firefliesCount);
+for (let i = 0; i < firefliesCount; i++) {
+  new THREE.Vector3(
+  (Math.random() - 0.5) * 4,
+  Math.random() * 1.5,
+  (Math.random() - 0.5) * 4).
+  toArray(positionArray, i * 3);
+  scaleArray[i] = Math.random();
+  scaleArray[i] = Math.random();
+  
+}
+firefliesGeometry.setAttribute(
+"position",
+new THREE.BufferAttribute(positionArray, 3));
+
+firefliesGeometry.setAttribute(
+"aScale",
+new THREE.BufferAttribute(scaleArray, 1));
+
+// const firefliesMaterial = new THREE.ShaderMaterial({
+//   vertexShader: firefliesVertexShader,
+// fragmentShader: firefliesFragmentShader,
+//   transparent: true,
+//   uniforms: {
+//     scroll: {value: 0},
+//     uTime: { value: 0 },
+//     uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+//     uSize: { value: 100 }
+//   },
+//   blending: THREE.AdditiveBlending,
+//   depthWrite: false
+// });
+
+const fireflies = new THREE.Points(firefliesGeometry, materialmat);
+scene.add(fireflies);
+
+
+
 // createPlane ();
 
   renderer.shadowMap.enabled = true;
@@ -593,8 +599,8 @@ function createPlane(){
 
       const elapsedTime = clock.getElapsedTime();
  
-      firefliesMaterial.uniforms.uTime.value = elapsedTime/2;
-      updateMaterial();
+      // firefliesMaterial.uniforms.uTime.value = elapsedTime/2;
+      // updateMaterial();
       if (mixer != null) mixer.update(delta);
       if (group) group.rotation.y -= 0.0005;
       
@@ -628,143 +634,94 @@ function createPlane(){
     // };
     // window.addEventListener("pointermove", handlePointerMove);
  
+function createAnimation(mixer, action, clip) {
+  let proxy = {
 
-    function createAnimation(mixer, action, clip) {
-      let proxy = {
-
-        get time() {
-          return mixer.time;
-        },
-        set time(value) {
-
-          clips.forEach(element => {
-            var last = mixer.clipAction( element );
-            last.paused = false;
-
-          });
-          mixer.setTime(value);
-          clips.forEach(element => {
-            var last = mixer.clipAction( element );
-            last.paused = true;
-          });
-        }
-      };
-
-
-    gsap.from(group.position, {
-              duration: 3,
-              delay:4,
-              ease: Power3.easeInOut,
-              y:-150,
-
-          });
-
-
-      let scrollingTL = gsap.timeline({
-        scrollTrigger: {
-          offset: -100,
-          trigger: ".smooth-scroll",
-          scroller: ".smooth-scroll",
-          start: "top top",
-          end: "bottom",
-          pin: true,
-          scrub: true,
-          ease: Power3.easeInOut,
-          
-        }
-      });
-
-      scrollingTL.to(proxy, {
-        time: clip.duration,
-        repeat: 0,
-      });
-
-      let scrollingTL2 = gsap.timeline({
-        scrollTrigger: {
-          trigger: ".smooth-scroll",
-          scroller: ".smooth-scroll",
-          start: "top top",
-          end: "bottom",
-          pin: true,
-          scrub: true,
-            ease: Power3.easeInOut,
-
-        }
-      }, );
-
-      scrollingTL2.to(camera.position, {
-       z:-10,
-      
-      });
-
-      let scrollingTL3 = gsap.timeline({
-        scrollTrigger: {
-          trigger: ".smooth-scroll",
-          scroller: ".smooth-scroll",
-          start: "top top",
-          end: "bottom",
-          pin: true,
-          scrub: true,
-            ease: Power3.easeInOut,
-
-        }
-      }, );
-      
+    get time() {
+      return mixer.time;
+    },
+    set time(value) {
 
       
 
-        scrollingTL3.to(model.position, {
-        x:2,
-        y:-2,
+      clips.forEach(element => {
+        var last = mixer.clipAction( element );
+        last.paused = false;
 
       });
-
-      let scrollingTL4 = gsap.timeline({
-        scrollTrigger: {
-          trigger: ".smooth-scroll",
-          scroller: ".smooth-scroll",
-          start: "top top",
-          end: "bottom",
-          pin: true,
-          scrub: true,
-            ease: Power3.easeInOut,
-
-        }
-      }, );
-
-      
-
-        scrollingTL4.to('#chess', {
-        opacity:0,
-
+      mixer.setTime(value);
+      clips.forEach(element => {
+        var last = mixer.clipAction( element );
+        last.paused = true;
       });
-
-
-
-      // let scrollingTL5 = gsap.timeline({
-      //   scrollTrigger: {
-      //     trigger: ".smooth-scroll",
-      //     scroller: ".smooth-scroll",
-      //     start: "top top",
-      //     endtrigger: "#intro",
-      //     pin: true,
-      //     scrub: true,
-      //       ease: Power3.easeInOut,
-
-      //   }
-      // }, );
-
-      
-
-      //   scrollingTL5.to('.hero_head', {
-      //     scale:0,
-      //   opacity:0,
-
-      // });
-
-      // $(gui.domElement).attr("hidden", true);
-
-
     }
+  };
 
-    };
+  let scrollingTL = gsap.timeline({
+    scrollTrigger: {
+      trigger: ".smooth-scroll",
+      scroller: ".smooth-scroll",
+      start: "top 10",
+      end: "bottom",
+      scrub: true,
+      ease: Power3.easeInOut,
+      onUpdate: function () {
+        camera.updateProjectionMatrix();
+      }
+    }
+  });
+
+  scrollingTL.to(proxy, {
+    time: clip.duration,
+    repeat: 0,
+  });
+
+  let scrollingTL2 = gsap.timeline({
+    scrollTrigger: {
+      trigger: ".smooth-scroll",
+      scroller: ".smooth-scroll",
+      start: "top top",
+      end: "bottom",
+      scrub: true,
+        ease: Power3.easeInOut,
+onUpdate: function () {
+        camera.updateProjectionMatrix();
+      }
+    }
+  }, );
+
+  scrollingTL2.to(model.rotation, {
+    x:Math.PI/5,
+    y:Math.PI,
+    z:-Math.PI/5,
+
+  });
+  
+  let scrollingTL3 = gsap.timeline({
+    scrollTrigger: {
+      trigger: ".smooth-scroll",
+      scroller: ".smooth-scroll",
+      start: "top top",
+      end: "bottom",
+      scrub: true,
+        ease: Power3.easeInOut,
+onUpdate: function () {
+        camera.updateProjectionMatrix();
+      }
+    }
+  }, );
+
+  
+
+    scrollingTL3.to(model.position, {
+    x:2,
+    y:-2,
+
+  });
+
+
+
+}
+
+
+};
