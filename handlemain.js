@@ -39,7 +39,7 @@ gsap.registerPlugin(ScrollTrigger);
     let smoothScroll;
 
     ////////BARBA INIT//////////
-    gsap.set(pageWrap, { autoAlpha: 0 });
+    // gsap.set(pageWrap, { autoAlpha: 0 });
 
     // show loader on page load
     gsap.set(loader, { autoAlpha: 1 });
@@ -241,12 +241,13 @@ gsap.registerPlugin(ScrollTrigger);
           {
             namespace: "projektdetail",
             beforeEnter() {
+              curtainsDet.dispose();     
 
             },
             afterEnter() {
 
            
-                gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+                // gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
  
                 
                     curtainsProjDet(smoothScroll);

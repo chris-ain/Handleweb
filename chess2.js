@@ -5,7 +5,6 @@ import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.
 import { EffectComposer } from 'https://threejs.org/examples/jsm/postprocessing/EffectComposer.js';
 import { UnrealBloomPass} from 'https://threejs.org/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { RenderPass} from 'https://threejs.org/examples/jsm/postprocessing/RenderPass.js';
-import { FilmPass} from 'https://threejs.org/examples/jsm/postprocessing/FilmPass.js';
 // import { RGBELoader } from 'https://threejs.org/examples/jsm/loaders/RGBELoader.js';
 
 
@@ -76,7 +75,7 @@ const transmissionoptions = {
 
 
 const targetObject = new THREE.Object3D();
-
+let dat;
 
 var stopAnimate;
 
