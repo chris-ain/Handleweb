@@ -1,7 +1,7 @@
 
 import { chessScene, id } from "./chess.js";
 import { curtainsmain, curtains } from "./curtainsmain.js";
-import { projekte, curtainsProj } from "./projekte.js";
+import { curtainsTrans, curtainsTransFunc } from "./curtainsTrans.js";
 import { curtainsAg, pl, curtainsgenturfunc, } from "./curtainsagentur.js";
 import { curtainsProjDet, curtainsDet } from "./curtainsdet.js";
 import { curtainsproundermain, curtainsprounder } from "./curtainprounder.js";
@@ -115,7 +115,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
             namespace: "home",
 
             beforeEnter() {
-              trans.out();	
+                   trans.out();	
               gsap.to(loader, {
                 opacity: 1,
                 duration: 0,
@@ -134,7 +134,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
              
                   setTimeout(function () {
                   trans.in();	
-                  },1600);
+                  },2000);
           
                
                 
@@ -207,7 +207,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
                     gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
 
                   trans.in();	
-                  },1600);
+                  },2000);
                   curtainsgenturfunc(smoothScroll);
                 }
               );
@@ -215,9 +215,13 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
             },
 
             beforeLeave(data) {
-            
+              setTimeout(function () {
                 curtainsAg.dispose();
                 curtainsAg.clear();
+   
+  
+              },1000);
+         
            
             },
           },
@@ -231,18 +235,14 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
 
             afterEnter() {
            
-
-              $('#page_content').imagesLoaded( {
-                // options...
-                },
-                function() {
-                  setTimeout(function () {
-                    trans.in();	
-                    },1600);
-                  gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
-                  curtainsproundermain(smoothScroll);             }
-              );
-     
+              $('#page-content').imagesLoaded( function() {
+                setTimeout(function () {
+                  trans.in();	
+                  },2000);
+                gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+                curtainsproundermain(smoothScroll);                      
+              });
+        
             },
 
             beforeLeave(data) {
@@ -252,7 +252,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
               curtainsprounder.dispose();
  
 
-            },1000);
+            },1600);
             },
           },
           /////////// PROJEKTDETAIL /////////////////////////
@@ -264,31 +264,46 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
 
             },
             afterEnter() {
-              const noScroll = document.querySelector('.no_scroll')
+              
 
-              $('#page_content').imagesLoaded( {
-                // options...
-                },
-                function() {
-                  gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+              gsap.set(".pro_in", {
+                opacity:0,
+              
+              })
+
+
+         
+              $('#images').imagesLoaded()
+              .always( function( instance ) {
+                console.log('all images loaded');
+              })
+              .done( function( instance ) {
+                setTimeout(function () {
+                  trans.in();	
+                  },2000);
+                  curtainsTransFunc(smoothScroll);
+                  curtainsProjDet(smoothScroll);  
 
                   setTimeout(function () {
-
-                    
                     trans.in();	
-
-
-                    
                     },1600);
 
-                    curtainsProjDet(smoothScroll);  
-
-                    gsap.to(".img_fullscreen", {
+                   const projTL = gsap.timeline()
+                    projTL.to(".img_fullscreen", {
                       delay: 0.4,
                       opacity: 0.5,
                       duration: 1,
                     });
-      
+
+                    projTL.to(".pro_in", {
+                      opacity:1,
+                      stagger:.2
+                  
+                    })
+
+
+                    gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+
                     const nexProjButton = document.querySelector('.next_proj')
                     nexProjButton.addEventListener('click',() => {
                       smoothScroll.stop();
@@ -306,10 +321,17 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
                         opacity:1,
                         duration:0,
                       })
-                    })
-          
-                           }
-              );
+                    })               })
+              .fail( function() {
+                console.log('all images loaded, at least one is broken');
+              })
+              .progress( function( instance, image ) {
+                var result = image.isLoaded ? 'loaded' : 'broken';
+                console.log( 'image is ' + result + ' for ' + image.img.src );
+              });
+
+
+            
                 // gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 })               
                   
 
@@ -319,7 +341,6 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
             },
 
             beforeLeave(data) {
-              smoothScroll.destroy();
               smoothScroll.stop();
 
               setTimeout(function () {    
@@ -332,6 +353,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
         {
           namespace: "jobs",
           beforeEnter() {
+            
           },
           afterEnter() {
             $(document).ready(function () {

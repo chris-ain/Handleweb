@@ -3,9 +3,9 @@ import * as THREE from 'https://threejs.org/build/three.module.js';
 
 export var trans;
 var $hamburger = $('.button');
-gsap.set('.navwrapper',{y:1000});  
-gsap.set('.navitem',{opacity:0, y:-50});  
-gsap.set('.sm_menu',{opacity:0})
+gsap.set('.navwrapper',{opacity:0, yPercent:-100});  
+gsap.set('.navitem',{opacity:0,});  
+gsap.set('.meta_menu',{opacity:0})
 // gsap.set('.main',{opacity:0})
 
 
@@ -233,9 +233,11 @@ class Transition {
 	addEvents() {
 
 		const menuTl = new gsap.timeline({paused:true})
-			menuTl.to('.navwrapper', {opacity: 1, y:0,  duration:0, delay:.0,});
-			menuTl.to('.navitem', {opacity: 1, y:0,  duration:.0, delay:.3, stagger: .06,});
-			menuTl.to('.sm_menu', {opacity:100,  delay:0, duration:.5  });
+		menuTl.to('.navwrapper', {yPercent: 0, duration:0, });
+
+			menuTl.to('.navwrapper', {opacity: 1, duration:1, });
+			menuTl.to('.navitem', {opacity: 1,  duration:.8, delay:0, stagger: .06,});
+			menuTl.to('.meta_menu', {opacity:1, duration:1  });
 
 			menuTl.reverse();
 
