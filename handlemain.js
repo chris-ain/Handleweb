@@ -19,6 +19,8 @@ import { trans } from "./menu.js";
 //     $(this).removeAttr('srcset');
 // });
 // });
+
+
 window.addEventListener("load", function() {
 gsap.registerPlugin(ScrollTrigger);
 gsap.set(".page_wrap",{ autoAlpha: 0,  });
@@ -113,7 +115,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
             namespace: "home",
 
             beforeEnter() {
-              
+              trans.out();	
               gsap.to(loader, {
                 opacity: 1,
                 duration: 0,
@@ -129,10 +131,10 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
                   chessScene();
                   gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
 
-                  trans.out();	
+             
                   setTimeout(function () {
                   trans.in();	
-                  },2000);
+                  },1600);
           
                
                 
@@ -205,7 +207,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
                     gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
 
                   trans.in();	
-                  },2000);
+                  },1600);
                   curtainsgenturfunc(smoothScroll);
                 }
               );
@@ -236,18 +238,11 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
                 function() {
                   setTimeout(function () {
                     trans.in();	
-                    },2000);
+                    },1600);
                   gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
                   curtainsproundermain(smoothScroll);             }
               );
-            
-   
-              $(".plane_test").click(() => {		
-                trans.out();	
-                trans.in();	
-
-          
-              });
+     
             },
 
             beforeLeave(data) {
@@ -275,9 +270,16 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
                 // options...
                 },
                 function() {
+                  gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+
                   setTimeout(function () {
+
+                    
                     trans.in();	
-                    },1000);
+
+
+                    
+                    },1600);
 
                     curtainsProjDet(smoothScroll);  
 

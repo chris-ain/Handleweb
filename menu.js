@@ -233,8 +233,8 @@ class Transition {
 	addEvents() {
 
 		const menuTl = new gsap.timeline({paused:true})
-			menuTl.to('.navwrapper', {opacity: 1, y:0,  duration:0, delay:.5,});
-			menuTl.to('.navitem', {opacity: 1, y:0,  duration:.5, delay:.3, stagger: .06,});
+			menuTl.to('.navwrapper', {opacity: 1, y:0,  duration:0, delay:.0,});
+			menuTl.to('.navitem', {opacity: 1, y:0,  duration:.0, delay:.3, stagger: .06,});
 			menuTl.to('.sm_menu', {opacity:100,  delay:0, duration:.5  });
 
 			menuTl.reverse();
