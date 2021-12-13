@@ -7,7 +7,7 @@ import { curtainsProjDet, curtainsDet } from "./curtainsdet.js";
 import { curtainsproundermain, curtainsprounder } from "./curtainprounder.js";
 import { trans } from "./menu.js";
 // import { sliderHome } from "./sliderNew.js"
-import {slider, raf} from "./slider.js"
+// import {slider, raf} from "./slider.js"
 
 // $(window).on('load', function(){
 //   $('.plane_img').each(function(){
@@ -21,6 +21,7 @@ import {slider, raf} from "./slider.js"
 // });
 window.addEventListener("load", function() {
 gsap.registerPlugin(ScrollTrigger);
+gsap.set(".page_wrap",{ autoAlpha: 0,  });
 
 //MAIN//
 
@@ -75,8 +76,9 @@ gsap.registerPlugin(ScrollTrigger);
         },
         onComplete: () => initScript(),
       });
+      
       tl.to(loader, { yPercent: 100 }).to(loaderMask, { yPercent: -80 }, 0);
-
+    
       // .from(container, { y: -150}, 0)
       return tl;
     }
@@ -92,6 +94,7 @@ gsap.registerPlugin(ScrollTrigger);
         select("html").classList.remove("is-transitioning");
         // reinit locomotive scroll
         smoothScroll.init();
+        
       });
 
       // scroll to the top of the page
@@ -110,6 +113,7 @@ gsap.registerPlugin(ScrollTrigger);
             namespace: "home",
 
             beforeEnter() {
+              
               gsap.to(loader, {
                 opacity: 1,
                 duration: 0,
@@ -117,9 +121,26 @@ gsap.registerPlugin(ScrollTrigger);
             },
 
             afterEnter() { 
-           
+              $('#page_content').imagesLoaded( {
+                // options...
+                },
+                function() {
+                  curtainsmain(smoothScroll);
+                  chessScene();
+                  gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+
+                  trans.out();	
+                  setTimeout(function () {
+                  trans.in();	
+                  },2000);
           
-                gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+               
+                
+                  // slider();
+                }
+              );
+        
+                // gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
 
             // let pinWrap = document.querySelector(".pin-wrap");
             //       let pinWrapWidth = pinWrap.offsetWidth;
@@ -152,30 +173,10 @@ gsap.registerPlugin(ScrollTrigger);
                   //   opacity: 0,
                   //   ease: "none"
                   // });
-                
-
-                  // let scrollingTL = gsap.timeline({
-                  //   scrollTrigger: {
-                  //     trigger: ".smooth-scroll",
-                  //     scroller: ".smooth-scroll",
-                  //     start: "top top",
-                  //     end: "bottom bottom",
-                  //     pin: true,
-                  //     scrub: true,
-                  //     ease: "none",
-                      
-                  //   }
-                  // });
+                 
+           
             
-                  // scrollingTL.to(".scroll_indicator_line", {
-                  //   xPercent: 100,
-              
-                  // });
-            
-              
-              curtainsmain(smoothScroll);
-              chessScene();
-              slider();
+         
         
             },
 
@@ -191,14 +192,24 @@ gsap.registerPlugin(ScrollTrigger);
           {
             namespace: "agentur",
             beforeEnter() {
+              trans.out();
             },
 
             afterEnter() {
-              $(document).ready(function () {
-              gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
-              curtainsgenturfunc(smoothScroll);
+              $('#page_content').imagesLoaded( {
+                // options...
+                },
+                function() {
+             	
+                  setTimeout(function () {
+                    gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
 
-              });
+                  trans.in();	
+                  },2000);
+                  curtainsgenturfunc(smoothScroll);
+                }
+              );
+       
             },
 
             beforeLeave(data) {
@@ -212,13 +223,25 @@ gsap.registerPlugin(ScrollTrigger);
           {
             namespace: "projekte",
             beforeEnter() {
+              trans.out();
+
             },
 
             afterEnter() {
-              $(document).ready(function () {
-                gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
-                curtainsproundermain(smoothScroll);
-              });
+           
+
+              $('#page_content').imagesLoaded( {
+                // options...
+                },
+                function() {
+                  setTimeout(function () {
+                    trans.in();	
+                    },2000);
+                  gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+                  curtainsproundermain(smoothScroll);             }
+              );
+            
+   
               $(".plane_test").click(() => {		
                 trans.out();	
                 trans.in();	
@@ -232,7 +255,7 @@ gsap.registerPlugin(ScrollTrigger);
               setTimeout(function () {
               // curtainsProj.dispose();
               curtainsprounder.dispose();
-              
+ 
 
             },1000);
             },
@@ -241,33 +264,64 @@ gsap.registerPlugin(ScrollTrigger);
           {
             namespace: "projektdetail",
             beforeEnter() {
-              curtainsDet.dispose();     
+          
+
 
             },
             afterEnter() {
+              const noScroll = document.querySelector('.no_scroll')
 
-           
-                // gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
- 
-                
-                    curtainsProjDet(smoothScroll);
-                 
-           
+              $('#page_content').imagesLoaded( {
+                // options...
+                },
+                function() {
+                  setTimeout(function () {
+                    trans.in();	
+                    },1000);
+
+                    curtainsProjDet(smoothScroll);  
+
+                    gsap.to(".img_fullscreen", {
+                      delay: 0.4,
+                      opacity: 0.5,
+                      duration: 1,
+                    });
+      
+                    const nexProjButton = document.querySelector('.next_proj')
+                    nexProjButton.addEventListener('click',() => {
+                      smoothScroll.stop();
+                      smoothScroll.destroy();
+                      gsap.to("#fullscreen", {
+                        opacity:0,
+                        duration:0,
+                      })
+                    })
+
+                    const brandbutton = document.querySelector('#brand')
+                    brandbutton.addEventListener('click',() => {
+                     
+                      gsap.to("#fullscreen", {
+                        opacity:1,
+                        duration:0,
+                      })
+                    })
+          
+                           }
+              );
+                // gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 })               
+                  
 
 
-            
-        
 
-              gsap.to(".img_fullscreen", {
-                delay: 0.4,
-                opacity: 0.5,
-                duration: 1,
-              });
+          
             },
 
             beforeLeave(data) {
-              setTimeout(function () {         
-                curtainsDet.dispose();     
+              smoothScroll.destroy();
+              smoothScroll.stop();
+
+              setTimeout(function () {    
+                curtainsDet.dispose();  
               },2000);
             },
           },
@@ -348,15 +402,15 @@ gsap.registerPlugin(ScrollTrigger);
             async leave(data) {
               // animate loading screen in
 
-              pageTransitionIn(data.current);
-
+            
+              trans.out();	
+              
               await delay(2000);
 
               data.current.container.remove();
             },
             async enter(data) {
               // animate loading screen away
-              pageTransitionOut(data.next);
             },
             
             async beforeEnter(data) {
@@ -381,8 +435,8 @@ gsap.registerPlugin(ScrollTrigger);
       smoothScroll = new LocomotiveScroll({
         el: document.getElementById("page-content"),
         smooth: true,
-        inertia: 0.5,
-        multiplier: 1.5,
+        inertia: .6,
+        multiplier: 2,
         mobile: {
           breakpoint: 0,
           smooth: true,
@@ -419,6 +473,20 @@ gsap.registerPlugin(ScrollTrigger);
         scrollbar[0].remove();
       }
 
+                  gsap.set(".scroll_indicator_line", {xPercent:-100,} )
+                  gsap.to(".scroll_indicator_line", {
+                    xPercent: 0,
+                    ease: 'none',
+                    scrollTrigger: { 
+                      trigger: ".main",
+                      start: "top top",
+                      scroller: ".smooth-scroll",
+                      end:"bottom bottom",
+                      endTrigger: ".footer_scroll",
+                      scrub: 0.3 
+                    }
+                  });
+
       ScrollTrigger.addEventListener("refresh", () => smoothScroll.update());
       ScrollTrigger.refresh();
     }
@@ -426,17 +494,30 @@ gsap.registerPlugin(ScrollTrigger);
     //////BARBA LOADER///////
 
     function initLoader() {
+      // trans.in()
+
+  
       const tlLoaderIn = gsap.timeline({
         id: "tlLoaderIn",
+        
         defaults: {
           duration: 1.1,
           delay:.2,
           ease: "power2.out",
+          
         },
+       
         onComplete: () => initScript(),
+        
       });
 
+      
+      // trans.in()
+
+    
       tlLoaderIn
+  
+
         //.set(loaderContent, {autoAlpha: 1})
         .to(loaderInner, {
           scaleY: 1,
@@ -482,6 +563,7 @@ gsap.registerPlugin(ScrollTrigger);
       select("body").classList.remove("is-loading");
     }
   }
+  barba.use(barbaPrefetch);
 
   init();
 

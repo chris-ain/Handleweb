@@ -23,7 +23,7 @@ export function curtainsgenturfunc (smoothScroll) {
       container: document.getElementById("canvastwo"),
       // premultipliedAlpha: true,
       watchScroll: useNativeScroll, // watch scroll on mobile not on desktop since we're using locomotive scroll
-      pixelRatio: Math.min(50, window.devicePixelRatio), // limit pixel ratio for performance
+      pixelRatio: Math.min(10, window.devicePixelRatio), // limit pixel ratio for performance
     });
     curtainsAgentur.clear();
 

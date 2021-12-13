@@ -1,491 +1,423 @@
-    export var raf;
+/**
+ * I referenced the YouTube by Mr.Yuri Artyukh.
+ * URL: https://www.youtube.com/watch?v=8K5wJeVgjrM&t=615s
+ * CDN: from https://cdn.jsdelivr.net
+ * Thank you so much :)
+ */
 
-import * as THREE from 'https://threejs.org/build/three.module.js';
-export function slider (){
+ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js';
+ import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/controls/OrbitControls.js';
+ //import { Stats } from 'https://cdnjs.cloudflare.com/ajax/libs/stats.js/16/Stats.min.js';
+ 
+ /** vertex shader source */
+ const vertexShaderSource = `
+ uniform float time;
+ uniform vec2 pixels;
+ uniform float distanceFromCenter;
+ uniform int hover;
+ 
+ varying vec2 vUv;
+ varying vec3 vPosition;
+ 
+ float PI = 3.1415926535;
+ 
+ void main () {
+   vUv = (uv - vec2(0.5)) * (0.8 - 0.2 * distanceFromCenter * (0.0 - distanceFromCenter)) + vec2(0.5);
+   vec3 pos = position;
+   /*  
+   if (hover == 0) {
+     pos.y = sin(pos.x + time * 0.01) * 0.1 + pos.y;
+     pos.z = cos(pos.x + time * 0.01) * 0.1 + pos.z;
+   }
+   */
+   if (hover == 0) {
+     pos.y = sin(pos.x + time * 0.01) * 0.05 + pos.y;
+     pos.z = sin(pos.x + time * 0.01) * 0.02 + pos.z;
+   }
+   //pos.y += sin(time * 0.03) * 0.01;
+   //vUv.y -= sin(time * 0.03) * 0.01;
+   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+ }
+ 
+ `;
+ 
+ /** fragment shader source */
+ const fragmentShaderSource = `
+ uniform float time;
+ uniform sampler2D texture1;
+ uniform vec4 resolution;
+ uniform float distanceFromCenter;
+ 
+ varying vec2 vUv;
+ varying vec3 vPosition;
+ 
+ vec3 rgbShift(sampler2D texture1, vec2 uv, vec2 offset) {
+   float r = texture2D(texture1,uv + offset).r;
+   vec2 gb = texture2D(texture1,uv).gb;
+   return vec3(r,gb);
+ }
+ 
+ void main () {
+  //  vec3 color = rgbShift(texture1,vUv,distanceFromCenter);
+   vec4 t = texture2D(texture1, vUv);
+   vec4 another = vec4(t.r, t.g, t.r, 0.0);
+   gl_FragColor = mix(another, t, distanceFromCenter);
+   gl_FragColor.a = clamp(distanceFromCenter, 0.2, 1.0);
+ }
+ 
+ `;
+ 
+ /**
+  * class Sketch
+  */
 
-    var clientHeight = document.getElementById('clientHeight').clientHeight;
-    console.log(clientHeight)
-    
-    const store = {
-      ww: window.innerWidth,
-      wh: window.innerHeight,
-      isDevice: navigator.userAgent.match(/Android/i) ||
-      navigator.userAgent.match(/webOS/i) ||
-      navigator.userAgent.match(/iPhone/i) ||
-      navigator.userAgent.match(/iPad/i) ||
-      navigator.userAgent.match(/iPod/i) ||
-      navigator.userAgent.match(/BlackBerry/i) ||
-      navigator.userAgent.match(/Windows Phone/i) };
-     const tit = document.querySelectorAll('.js-title');
-    
-    let canv; 
-    class Slider {
-    
-      constructor(el, opts = {}) {
-        this.bindAll();
-        this.el = el;
-    
-    
-        this.opts = Object.assign({
-          speed: 2,
-          threshold: 50,
-          ease: 0.075 },
-        opts);
-    
-        this.ui = {
-          items: this.el.querySelectorAll('.js-slide'),
-          titles: document.querySelectorAll('.js-title'),
-          tit: document.querySelectorAll('.js-title'),
 
-          lines: document.querySelectorAll('.js-progress-line') };
-    
-    
-        this.state = {
-          target: 0,
-          current: 0,
-          currentRounded: 0,
-          y: 0,
-          on: {
-            x: 0,
-            y: 0 },
-    
-          off: 0,
-          progress: 0,
-          diff: 0,
-          max: 0,
-          min: 0,
-          snap: {
-            points: [] },
-    
-          flags: {
-            dragging: false } };
-    
-    
-    
-        this.items = [];
-    
-        this.events = {
-          move: store.isDevice ? 'touchmove' : 'mousemove',
-          up: store.isDevice ? 'touchend' : 'mouseup',
-          down: store.isDevice ? 'touchstart' : 'mousedown' };
-    
-    
-        this.init();
-      }
-    
-      bindAll() {
-        ['onDown', 'onMove', 'onUp'].
-        forEach(fn => this[fn] = this[fn].bind(this));
-      }
-    
-      init() {
-        return gsap.utils.pipe(
-        this.setup(),
-        this.on());
-    
-      }
-    
-      destroy() {
-        this.off();
-        this.state = null;
-        this.items = null;
-        this.opts = null;
-        this.ui = null;
-      }
-    
-      on() {
-        const { move, up, down } = this.events;
-    
-        window.addEventListener(down, this.onDown);
-        window.addEventListener(move, this.onMove);
-        window.addEventListener(up, this.onUp);
-      }
-    
-      off() {
-        const { move, up, down } = this.events;
-    
-        window.removeEventListener(down, this.onDown);
-        window.removeEventListener(move, this.onMove);
-        window.removeEventListener(up, this.onUp);
-      }
-    
-      setup(tit) {
-        const { ww } = store;
-        const state = this.state;
-        const { items, titles,  } = this.ui;
-        const {
-          width: wrapWidth,
-          left: wrapDiff } =
-        this.el.getBoundingClientRect();
-    
-        // Set bounding
-        state.max = -(items[items.length - 1].getBoundingClientRect().right - wrapWidth - wrapDiff);
-        state.min = 0;
-    
-        // Global timeline
-        this.tl = gsap.timeline({
-          paused: true,
-          defaults: {
-            duration: 1,
-            ease: 'linear' } }).
-    
-    
-        fromTo('.js-progress-line-2', {
-          scaleX: 1 },
-        {
-          scaleX: 0,
-          duration: 0.5,
-          ease: 'power3' },
-        0).
-        fromTo('.tit', {
-          xPercent: 0 },
-        {
-          xPercent: -100 -(100/items.length +600)},
-        0).
-        fromTo('.js-progress-line', {
-          scaleX: 0 },
-        {
-          scaleX: 1 },
-        0);
-    
-        // Cache stuff
-        for (let i = 0; i < items.length; i++) {
-          const el = items[i];
-          const { left, right, width } = el.getBoundingClientRect();
-    
-          // Create webgl plane
-          const plane = new Plane();
-          plane.init(el);
-    
-          // Timeline that plays when visible
-          const tl = gsap.timeline({ paused: true }).
-          fromTo(plane.mat.uniforms.uScale, {
-            value: 0.65 },
-          {
-            value: 1,
-            duration: 1,
-            ease: 'linear' });
-    
-    
-          // Push to cache
-          this.items.push({
-            el, plane,
-            left, right, width,
-            min: left < ww ? ww * 0.775 : -(ww * 0.225 - wrapWidth * 0.2),
-            max: left > ww ? state.max - ww * 0.775 : state.max + (ww * 0.225 - wrapWidth * 0.2),
-            tl,
-            out: false });
-    
-        }      console.log(items)
-      }
-
-      calc() {
-        const state = this.state;
-        state.current += (state.target - state.current) * this.opts.ease;
-        state.currentRounded = Math.round(state.current * 100) / 100;
-        state.diff = (state.target - state.current) * 0.0005;
-        state.progress = gsap.utils.wrap(0, 1, state.currentRounded / state.max);
-    
-        this.tl && this.tl.progress(state.progress);
-      }
-    
-      render() {
-        this.calc();
-        this.transformItems();
-      }
-    
-      transformItems() {
-        const { flags } = this.state;
-    
-        for (let i = 0; i < this.items.length; i++) {
-          const item = this.items[i];
-          const { translate, isVisible, progress } = this.isVisible(item);
-    
-          item.plane.updateX(translate);
-          item.plane.mat.uniforms.uVelo.value = this.state.diff;
-    
-          if (!item.out && item.tl) {
-            item.tl.progress(progress);
-          }
-    
-          if (isVisible || flags.resize) {
-            item.out = false;
-          } else if (!item.out) {
-            item.out = true;
-          }
-        }
-      }
-
-      isVisible({ left, right, width, min, max }) {
-        const { ww } = store;
-        const { currentRounded } = this.state;
-        const translate = gsap.utils.wrap(min, max, currentRounded);
-        const threshold = this.opts.threshold;
-        const start = left + translate;
-        const end = right + translate;
-        const isVisible = start < threshold + ww && end > -threshold;
-        const progress = gsap.utils.clamp(0, 1, 1 - (translate + left + width) / (ww + width));
-    
-        return {
-          translate,
-          isVisible,
-          progress };
-    
-      }
-    
-      clampTarget() {
-        const state = this.state;
-    
-        state.target = gsap.utils.clamp(state.max, 0, state.target);
-      }
-    
-      getPos({ changedTouches, clientX, clientY, target }) {
-        const x = changedTouches ? changedTouches[0].clientX : clientX;
-        const y = changedTouches ? changedTouches[0].clientY : clientY;
-    
-        return {
-          x, y, target };
-    
-      }
-    
-      onDown(e) {
-        const { x, y } = this.getPos(e);
-        const { flags, on } = this.state;
-    
-        flags.dragging = true;
-        on.x = x;
-        on.y = y;
-      }
-    
-      onUp() {
-        const state = this.state;
-    
-        state.flags.dragging = false;
-        state.off = state.target;
-      }
-    
-      onMove(e) {
-        const { x, y } = this.getPos(e);
-        const state = this.state;
-    
-        if (!state.flags.dragging) return;
-    
-        const { off, on } = state;
-        const moveX = x - on.x;
-        const moveY = y - on.y;
-    
-        if (Math.abs(moveX) > Math.abs(moveY) && e.cancelable) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-    
-        state.target = off + moveX * this.opts.speed;
-      }}
-    
-    
-    /***/
-    /*** GL STUFF ****/
-    /***/
-    
-    const backgroundCoverUv = `
-    vec2 backgroundCoverUv(vec2 screenSize, vec2 imageSize, vec2 uv) {
-      float screenRatio = screenSize.x / screenSize.y;
-      float imageRatio = imageSize.x / imageSize.y;
-    
-      vec2 newSize = screenRatio < imageRatio 
-          ? vec2(imageSize.x * screenSize.y / imageSize.y, screenSize.y)
-          : vec2(screenSize.x, imageSize.y * screenSize.x / imageSize.x);
-    
-      vec2 newOffset = (screenRatio < imageRatio 
-          ? vec2((newSize.x - screenSize.x) / 2.0, 0.0) 
-          : vec2(0.0, (newSize.y - screenSize.y) / 2.0)) / newSize;
-    
-      return uv * screenSize / newSize + newOffset;
-    }
-    `;
-    
-    const vertexShader = `
-    precision mediump float;
-    
-    uniform float uVelo;
-    
-    varying vec2 vUv;
-    
-    #define M_PI 3.1415926535897932384626433832795
-    
-    void main(){
-      vec3 pos = position;
-      pos.x = pos.x + ((sin(uv.y * M_PI) * uVelo) * 0.125);
-    
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos,1.);
-    }
-    `;
-    
-    const fragmentShader = `
-    precision mediump float;
-    
-    ${backgroundCoverUv}
-    
-    uniform sampler2D uTexture;
-    
-    uniform vec2 uMeshSize;
-    uniform vec2 uImageSize;
-    
-    uniform float uVelo;
-    uniform float uScale;
-    
-    varying vec2 vUv;
-    
-    void main() {
-      vec2 uv = vUv;
-    
-      vec2 texCenter = vec2(0.5);
-      vec2 texUv = backgroundCoverUv(uMeshSize, uImageSize, uv);
-      vec2 texScale = (texUv - texCenter) * uScale + texCenter;
-      vec4 tex = texture2D(uTexture, texScale);
-    
-      texScale.x += 0.2 * uVelo;
-      if(uv.y < 1.) tex.r = texture2D(uTexture, texScale).r;
-    
-      // texScale.x += 0.1 * uVelo;
-      // if(uv.x < 1.) tex.g = texture2D(uTexture, texScale).g;
-      // texScale.x += 0.1 * uVelo;
-      // if(uv.y < 1.) tex.b = texture2D(uTexture, texScale).b;
-    
-      gl_FragColor = tex;
-    }
-    `;
-    
-    const loader = new THREE.TextureLoader();
-    loader.crossOrigin = 'anonymous';
-    
-    class Gl {
-    
-      constructor() {
-        this.scene = new THREE.Scene();
-        this.canvasSlide = document.querySelector('.slider_canvas')
-        this.camera = new THREE.OrthographicCamera(
-        store.ww / -2,
-        store.ww / 2,
-        store.wh / 2,
-        store.wh / -2,
-        1,
-        10);
-    
-        this.camera.lookAt(this.scene.position);
-        this.camera.position.z = 1;
-    
-    
-        this.renderer = new THREE.WebGLRenderer({
-          alpha: true,
-          antialias: true });
-          
-        this.renderer.setPixelRatio(1.5);
-        this.renderer.setSize(store.ww, store.wh);
-        this.renderer.setClearColor(0xffffff, 0);
-    
-        this.init();
-      }
-    
-      render() {
-        this.renderer.render(this.scene, this.camera);
-      }
-    
-      init() {
-        var container_Slide = document.getElementById("slider_canvas");
-    
-            var container_Slider = this.renderer.domElement;
-    
-          container_Slide.appendChild(container_Slider);
-          container_Slider.classList.add('dom-gl');
-    
-      }}
-    
-    
-    class GlObject extends THREE.Object3D {
-    
-      init(el) {
-        this.el = el;
-    
-        this.resize();
-      }
-    
-      resize() {
-        this.rect = this.el.getBoundingClientRect();
-        const { left, top, width, height } = this.rect;
-    
-        this.pos = {
-          x: left + width / 2 - store.ww / 2,
-          y: top + height / 2 - store.wh /2, };
-    
-          console.log(this.pos)
-        this.position.y = this.pos.y -clientHeight ;
-        this.position.x = this.pos.x;
-        this.updateX();
-
-    
-    
-      }
-    
-      updateX(current) {
-        current && (this.position.x = current + this.pos.x);
-      }
+ class Sketch {
+   constructor() {
+     this.stats = null;
+     
+     this.renderer = new THREE.WebGLRenderer({ antialias: true });
+     document.getElementById('container').appendChild(this.renderer.domElement);
+     
+     /** basic parameters */
+     this.animationId = null;
+     this.camera = null;
+     this.scene = null;
+     this.controls = null; // for orbit
+     this.time = null;
+     
+     /** for wheel */
+     this.speed = null;
+     this.position = null;
+     this.rounded = null;
+     this.preRounded = null;
+     
+     /** for handleImages */
+     this.images = null;
+     this.materials = null;
+     this.meshes = null;
+     this.groups = null;
+     
+     /** for navEventSetup */
+     this.rots = null;
+     this.navs = null;
+     this.nav = null;
+     this.attractMode = null;
+     this.attractTo = null;
+     
+     /** get doms */
+     this.elms = null;
+     this.objs = null;
+     this.sections = null;
+     
+     this.wheel();
+     this.resize();
+     //this.statsInit();
+     this.init();
+   }
    
-    }
-    
-    
-    const planeGeo = new THREE.PlaneBufferGeometry(1, 1, 32, 32);
-    const planeMat = new THREE.ShaderMaterial({
-      transparent: true,
-      fragmentShader,
-      vertexShader });
-    
-    
-    class Plane extends GlObject {
-    
-      init(el) {
-        super.init(el);
-    
-        this.geo = planeGeo;
-        this.mat = planeMat.clone();
-    
-        this.mat.uniforms = {
-          uTime: { value: 0 },
-          uTexture: { value: 0 },
-          uMeshSize: { value: new THREE.Vector2(this.rect.width, this.rect.height) },
-          uImageSize: { value: new THREE.Vector2(0, 0) },
-          uScale: { value: 0.75 },
-          uVelo: { value: 0 } };
-    
-    
-        this.img = this.el.querySelector('img');
-        this.texture = loader.load(this.img.src, texture => {
-          texture.minFilter = THREE.LinearFilter;
-          texture.generateMipmaps = false;
-    
-          this.mat.uniforms.uTexture.value = texture;
-          this.mat.uniforms.uImageSize.value = [this.img.naturalWidth, this.img.naturalHeight];
-        });
-    
-        this.mesh = new THREE.Mesh(this.geo, this.mat);
-        this.mesh.scale.set(this.rect.width, this.rect.height, 1);
-        this.add(this.mesh);
-        gl.scene.add(this);
-      }}
-    
-    
-    /***/
-    /*** INIT STUFF ****/
-    /***/
-    
-    const gl = new Gl();
-    const slider = new Slider(document.querySelector('.js-slider'));
-    
-    const tick = () => {
-      gl.render();
-      slider.render();
-    };
-    raf = tick;
-    gsap.ticker.add(tick);
-}
+   init() {
+     /** renderer settings */
+     this.renderer.setSize(window.innerWidth, window.innerHeight);
+     this.renderer.setPixelRatio(window.devicePixelRatio);
+     this.renderer.setClearColor('black');
+     
+     /** camera setting */
+     this.camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.01, 10);
+     this.camera.aspect = window.innerWidth / window.innerHeight;
+     this.camera.position.z = 2;
+     
+     /** scene */
+     this.scene = new THREE.Scene();
+     
+     /** when use orbit controls */
+    //  this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+     
+     /** parameters */
+     this.time = 0;
+     this.speed = 0;
+     this.position = 0;
+     this.rounded = 0;
+     this.preRounded = this.rounded;
+     
+     this.elms = document.querySelectorAll('.area');
+     this.objs = Array(this.elms.length).fill({dist: 0});
+     this.sections = document.querySelectorAll('section');
+     
+     /** for handleImages */
+     this.images = document.querySelectorAll('img');
+     console.log(this.images)
+     this.materials = new Array();
+     this.meshes = new Array();
+     this.groups = new Array();
+
+     
+     
+     /** for navEventSetup */
+     this.hover = 0;
+     this.rots = null;
+     this.navs = document.querySelectorAll('li');
+     this.nav = document.querySelector('.nav');
+     this.attractMode = false;
+     this.attractTo = 0;
+     
+     /** start programs */
+     this.addMesh();
+     this.handleImages();
+     this.navEventSetup();
+     this.render();
+   }
+   
+   handleImages() {
+     this.images.forEach((im, i) => {
+       const mat = this.material.clone();
+       const group = new THREE.Group();
+       
+       this.materials.push(mat);
+       //mat.wireframe = true;
+       mat.uniforms.texture1.value = new THREE.Texture(im);
+       mat.uniforms.texture1.value.needsUpdate = true;
+       
+       const geo = new THREE.PlaneBufferGeometry(1.2, 0.8, 100, 100);
+       const mesh = new THREE.Mesh(geo, mat);
+       
+       group.add(mesh);
+       this.groups.push(group);
+       this.scene.add(group);
+       this.meshes.push(mesh);
+       
+       mesh.position.x = i * Math.cos(1.2);
+       mesh.position.y = i * Math.sin(1.2);
+       group.rotation.x = -0.3;
+       group.rotation.y = -0.3;
+       group.rotation.z = -0.1;
+     });
+   }
+   
+   statsInit() {
+     this.stats = new Stats();
+     this.stats.setMode(0);
+     this.stats.domElement.style.position = 'absolute';
+     this.stats.domElement.style.left = '0px';
+     this.stats.domElement.style.top = '0px';
+     document.getElementById('container').appendChild(this.stats.domElement);
+   }
+   
+   navEventSetup() {
+     this.rots = this.groups.map((e) => {
+       return e.rotation;
+     });
+     
+     this.nav.addEventListener('mouseenter', () => {
+       this.attractMode = true;
+       this.hover = 1;
+       gsap.to(this.rots, {
+         duration: 0.4,
+         x: -0.3,
+         y: 0,
+         z: 0
+       });
+     });
+     
+     this.nav.addEventListener('mouseleave', () => {
+       this.attractMode = false;
+       this.hover = 0;
+       gsap.to(this.rots, {
+         duration: 0.4,
+         x: -0.3,
+         y: -0.3,
+         z: -0.1,
+       });
+     });
+     
+     this.navs.forEach((el) => {
+       el.addEventListener('mouseover', (e) => {
+         this.attractTo = Number(e.target.getAttribute('data-nav'));
+       });
+     });
+   }
+   
+   addMesh() {
+     this.material = new THREE.ShaderMaterial({
+       side: THREE.DoubleSide,
+       transparent: true,
+       uniforms: {
+         time: {type: 'f', value: 0},
+         texture1: {type: 't', value: null},
+         hover: {type: 'i', value: 0},
+         distanceFromCenter: {type: 'f', value: 0},
+         resolution: {type: 'v4', value: new THREE.Vector4()},
+         uvRatel: {
+           value: new THREE.Vector2(1, 1)
+         }
+       },
+       vertexShader: vertexShaderSource,
+       fragmentShader: fragmentShaderSource
+     });
+   }
+   
+   render() {
+     this.time++;
+     
+     /** wheel event*/
+     this.position += this.speed;
+     this.speed *= 0.7;
+     this.rounded = Math.round(this.position);
+     if (this.position < 0) {
+       this.position = 0;
+     }
+     if (this.position > 4) {
+       this.position = 4;
+     }
+     
+     const diff = (this.rounded - this.position);
+     
+     if (this.attractMode) {
+       this.position += -(this.position - this.attractTo) * 0.04;
+     } else {
+       this.position += Math.sign(diff) * Math.pow(Math.abs(diff), 0.9) * 0.01;
+     }
+     
+     this.objs.forEach((o, i) => {
+       o.dist = Math.min(Math.abs(this.position - i), 1);
+       o.dist = 1 - o.dist ** 2;
+       const scale = 1 + 0.1 * o.dist;
+       this.meshes[i].position.x = i * 1.6 - this.position * 1.6;
+    //    this.meshes[i].rotation.x = i * .5 - this.position * .5;
+
+       this.meshes[i].scale.set(scale, scale, scale);
+       this.meshes[i].material.uniforms.distanceFromCenter.value = o.dist;
+     });
+     
+     for (let i = 0; i < this.materials.length; i++) {
+       this.materials[i].uniforms.time.value = this.time;
+       this.materials[i].uniforms.hover.value = this.hover;
+     }
+     
+     if (this.preRounded !== this.rounded) {
+       this.changeSection();
+       for (let i = 0; i < this.navs.length; i++) {
+         this.navs[i].classList.remove('now');
+        
+       }
+       this.navs[this.rounded].classList.add('now');
+     }
+     
+     this.renderer.render(this.scene, this.camera);
+     this.preRounded = this.rounded;
+     this.camera.lookAt(this.position)
+     this.animationId = window.requestAnimationFrame(this.render.bind(this));
+   }
+   
+   resize() {
+     window.addEventListener('resize', () => {
+       window.cancelAnimationFrame(this.animationId);
+       this.init();
+     });
+   }
+   
+   changeSection() {
+     for (let i = 0; i < this.sections.length; i++) {
+       this.sections[i].classList.remove('display');
+      
+     }
+     this.sections[this.rounded].classList.add('display');
+     
+   }
+   
+   wheel() {
+     window.addEventListener('wheel', (e) => {
+       this.speed += e.deltaY * 0.0002;
+     });
+   }
+ }
+ 
+ class Observer {
+   constructor() {
+     /** dom */
+     this.wrap = null;
+     this.lists = null;
+     this.ares = null;
+     this.sections = null;
+     
+     /** observer */
+     this.options = null;
+     this.targetElements = null;
+     this.observer = null;
+     
+     this.init();
+   }
+   
+   init() {
+     /** dom */
+     this.wrap = document.querySelector('#wrap');
+     this.lists = document.querySelectorAll('.nav li');
+     this.areas = document.querySelectorAll('#wrap .area');
+     this.sections = document.querySelectorAll('section');
+     this.targetElements = document.querySelectorAll('div.area');
+     
+     /** observer */
+     this.options = {
+       root: document.querySelector('#wrap'),
+       rootMargin: '0px',
+       threshold: 0.8
+     };
+     this.observer = new IntersectionObserver(this.callback.bind(this), this.options);
+     for (let i = 0; i < this.targetElements.length; i++) {
+       this.observer.observe(this.targetElements[i]);
+     }
+     
+     /** setup event */
+     if (window.innerWidth < 500) {
+       this.scroll();
+     }
+     this.resize();
+   }
+   
+   callback(entries) {
+     for (let i = 0; i < entries.length; i++) {
+       if (entries[i].isIntersecting) {
+         const index = entries[i].target.getAttribute('data-display');
+         
+         for (let i = 0; i < this.sections.length; i++) {
+           this.sections[i].classList.remove('display');
+           this.lists[i].classList.remove('now');
+         }
+         
+         this.sections[index].classList.add('display');
+         this.lists[index].classList.add('now');
+       }
+     }
+   }
+   
+   scroll() {
+     for (let i = 0; i < this.lists.length; i++) {
+       this.lists[i].addEventListener('mouseenter', (e) => {
+         e.preventDefault();
+         this.wrap.scrollTo({
+           top: this.areas[i].getBoundingClientRect().top + this.wrap.scrollTop,
+           left: 0,
+           behavior: 'smooth'
+         });
+       }, false);
+     }
+   }
+   
+   resize() {
+     window.addEventListener('resize', () => {
+       this.init();
+     });
+   }
+ }
+ 
+ window.addEventListener('load', () => {
+   console.clear();
+   
+   /** loading animation */
+   const loading = document.getElementById('loading');
+   loading.classList.add('loaded');
+   
+   /** start program */
+   new Observer();
+   const sketch = new Sketch();
+ });

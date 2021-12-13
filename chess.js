@@ -55,7 +55,7 @@ export function chessScene(smoothScroll) {
       1000
     );
     camera.position.z = 5;
-    camera.position.y = 1.5;
+    camera.position.y = 1.8;
 
     var lightamb = new THREE.AmbientLight(0xf7f7f7, 0.1);
     scene.add(lightamb);
@@ -79,9 +79,9 @@ export function chessScene(smoothScroll) {
 			enableSSRr: true,
 			autoRotate: true,
       exposure: 1,
-				bloomStrength: 1.5,
-				bloomThreshold: 0,
-				bloomRadius: 0
+			bloomStrength: 1.5,
+			bloomThreshold: 0,
+			bloomRadius: 0
 		};
 
     
@@ -89,9 +89,6 @@ export function chessScene(smoothScroll) {
 
      var normal = texLoader.load( 'https://uploads-ssl.webflow.com/612d2c01db57a270ec502b3f/61885cd22ccdfed3d95febbf_download.jpg');
  
-
-
-
      const materialmat = new THREE.MeshMatcapMaterial({
        normalMap: normal,
        normalScale: new THREE.Vector2( .04, .04 ),
@@ -134,11 +131,11 @@ export function chessScene(smoothScroll) {
 
 
 
-var loader = new GLTFLoader();
-var mixer;
-var model;
-var clips;
-var mixers = [];
+const loader = new GLTFLoader();
+let mixer;
+let model;
+let clips;
+let mixers = [];
 
 const group = new THREE.Group();
 
@@ -181,12 +178,11 @@ loader.load(
     
     model = gltf.scene;
     expModel = gltf.scene;
-    model.position.set(0,-.01, 0);
+    model.position.set(0,0, 0);
 
     group.scale.set(0.31, 0.31, 0.31);
-    group.position.set(0,.6, 0);
+    group.position.set(0,.0, 0);
 
-    group.rotation.set(0,-Math.PI/2, 0);
     group.add( model);
     scene.add( group );
 
@@ -220,42 +216,26 @@ loader.load(
 
     clips.paused= true;
     createAnimation(mixer, action, gltf.animations[1]);
-
     
   
   }
 );
     
    
-        
-     //===================================================== Postprocessing
+
+
+
+    // var mouse = new THREE.Vector2();
+    // var raycaster = new THREE.Raycaster();
+    // var intersects = new THREE.Vector3();
     
-
-
-  //   //===================================================== resize
-    window.addEventListener("resize", function () {
-      let width = window.innerWidth;
-      let height = window.innerHeight;
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      const pixelRatio = renderer.getPixelRatio();
-
-    });
-
-
-
-
-    var mouse = new THREE.Vector2();
-    var raycaster = new THREE.Raycaster();
-    var intersects = new THREE.Vector3();
-    
-    function onMouseMove(e) {
-      mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-      mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-      raycaster.setFromCamera(mouse, camera);
-      raycaster.ray.intersectPlane(plane, intersects);
-      model.position.set(intersects.x, intersects.y, intersects.z);
-    }
+    // function onMouseMove(e) {
+    //   mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    //   mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    //   raycaster.setFromCamera(mouse, camera);
+    //   raycaster.ray.intersectPlane(plane, intersects);
+    //   model.position.set(intersects.x, intersects.y, intersects.z);
+    // }
     
 
 
@@ -271,16 +251,27 @@ loader.load(
 
 
   
+  //   //===================================================== resize
+  window.addEventListener("resize", function () {
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    const pixelRatio = renderer.getPixelRatio();
+
+  });
+
 
 var clock = new THREE.Clock();
-function render() {
+function animate() {
 
-  id = requestAnimationFrame(render);
+  id = requestAnimationFrame(animate);
   renderer.render(scene, camera);
   // stats.update();
   const timer = 0.0001 * Date.now();
 
   var delta = clock.getDelta();
+  camera.lookAt(group.position)
 
   if (mixer != null) mixer.update(delta);
   if (group) group.rotation.y += 0.001;
@@ -295,7 +286,7 @@ function render() {
 
 }
 
-render();
+animate();
 
 function createAnimation(mixer, action, clip) {
   let proxy = {
@@ -327,7 +318,7 @@ function createAnimation(mixer, action, clip) {
       start: "top 10",
       end: "bottom",
       scrub: true,
-      ease: Power3.easeInOut,
+      ease: Power2.easeInOut,
       onUpdate: function () {
         camera.updateProjectionMatrix();
       }
@@ -381,7 +372,6 @@ onUpdate: function () {
     y:-2,
 
   });
-
 
 
 }

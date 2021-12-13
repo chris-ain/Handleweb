@@ -6,7 +6,7 @@ var $hamburger = $('.button');
 gsap.set('.navwrapper',{y:1000});  
 gsap.set('.navitem',{opacity:0, y:-50});  
 gsap.set('.sm_menu',{opacity:0})
-gsap.set('.main',{opacity:0})
+// gsap.set('.main',{opacity:0})
 
 
 const menucanvas = document.getElementById("fullscreen");
@@ -50,7 +50,7 @@ class Transition {
 
 				gsap.timeline({
 					paused: true,
-					defaults: { duration: 1.25, ease: "power3.inOut",  },
+					defaults: { duration: 1.25, delay:.3, ease: "power3.inOut",  },
 				})
 
 					.to(
@@ -89,7 +89,7 @@ class Transition {
 
 				gsap.timeline({
 					paused: true,
-					defaults: { duration: 1.25, delay:2.5, ease: "power3.inOut", },
+					defaults: { duration: 1.25, delay:.3, ease: "power3.inOut", },
 				})
 					.clear()
 					.set(uOut, { value: false })
@@ -248,7 +248,6 @@ class Transition {
 		});
 
 		$(".navitem").click(() => {			
-			this.reverse ? this.in() : this.out();
 			menuTl.reversed(!menuTl.reversed());
 
 		});
@@ -260,13 +259,13 @@ class Transition {
 		// 	});
 
 
-		// })
+		// // })
 
-		$(".link_trans").click(() => {			
-			this.reverse ? this.in() : this.out();
-			menuTl.reversed(!menuTl.reversed());
+		// $(".link_trans").click(() => {			
+		// 	this.reverse ? this.in() : this.out();
+		// 	menuTl.reversed(!menuTl.reversed());
 
-		});
+		// });
 
 		
 	}
@@ -276,33 +275,9 @@ window.addEventListener("resize", () => {
 	bounds.ww = window.innerWidth;
 	bounds.wh = window.innerHeight;
 	transition.resize();
+
 });
-window.addEventListener("load", function() {
-	const page = document.getElementById("main");
 
-	const tl = new gsap.timeline({});
-	
-	tl.to(page, {
-		opacity:0,
-		delay:0,
-		duration:1,
-	})
-	tl.to(page, {
-		opacity:1,
-		delay:1,
-	})
-	const  firstFunction = async ()=>{
-		transition.out();   
-	}	
-	const secondFunction = async () => {
-		const result = await firstFunction()
-		transition.in();	  
-	}
-	setTimeout(function(){ 
-		secondFunction();
-
-		 }, 500);
-  });
 
 
 trans = transition;

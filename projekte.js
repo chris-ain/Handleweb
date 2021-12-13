@@ -7,8 +7,7 @@ export function projekte (smoothScroll){
     let canvasclick;
     var planesDeformations = 0
 	let d = document;
-    let anchor1Link  = d.getElementById('anchor1Link');
-    let anchor1 = d.getElementById('anchor1');
+
 
     function lerp(start, end, amt) {
         return (1 - amt) * start + amt * end * 0.5;

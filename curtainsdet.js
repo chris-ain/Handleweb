@@ -3,8 +3,29 @@ export var curtainsDet;
     
 
 export function curtainsProjDet (smoothScroll){
+    const images = document.querySelectorAll('.plane_img')
+    console.log(images)
+    $(document).ready(function () {
+        var imagesLoaded = 0;
 
-
+        // When we begin, assume no images are loaded.
+        // Count the total number of images on the page when the page has loaded.
+        var totalImages = $("img").length
+      
+        // After an image is loaded, add to the count, and if that count equals the
+        // total number of images, fire the allImagesLoaded() function.
+        $("img").on("load", function (event) {
+          imagesLoaded++
+          if (imagesLoaded == totalImages) {
+            allImagesLoaded()
+          }
+        })
+      
+        function allImagesLoaded() {
+          console.log("ALL IMAGES LOADED")
+        }
+        allImagesLoaded()
+      })
 
    let useNativeScroll;
     let scrollEffect = 0;
@@ -238,8 +259,7 @@ if(!useNativeScroll) {
             }
 
             plane.htmlElement.addEventListener("click", (e) => {
-              smoothScroll.stop();
-              smoothScroll.destroy();
+  
 
                 onPlaneClick(e, plane,);
                 gsap.to(".smooth-scroll", {
