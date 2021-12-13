@@ -1,13 +1,13 @@
 
-import { chessScene, id } from "./chess.js";
-import { curtainsmain, curtains } from "./curtainsmain.js";
-import { curtainsTrans, curtainsTransFunc } from "./curtainsTrans.js";
-import { curtainsAg, pl, curtainsgenturfunc, } from "./curtainsagentur.js";
-import { curtainsProjDet, curtainsDet } from "./curtainsdet.js";
-import { curtainsproundermain, curtainsprounder } from "./curtainprounder.js";
-import { trans } from "./menu.js";
+import { chessScene, id } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/chess.js";
+import { curtainsmain, curtains } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsmain.js";
+import { curtainsTrans, curtainsTransFunc } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsTrans.js";
+import { curtainsAg, pl, curtainsgenturfunc, } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsagentur.js";
+import { curtainsProjDet, curtainsDet } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsdet.js";
+import { curtainsproundermain, curtainsprounder } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainprounder.js";
+import { trans } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/menu.js";
 // import { sliderHome } from "./sliderNew.js"
-import {slider, raf} from "./slider.js"
+import {slider, raf} from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/slider.js"
 
 // $(window).on('load', function(){
 //   $('.plane_img').each(function(){
