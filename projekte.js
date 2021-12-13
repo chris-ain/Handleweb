@@ -44,7 +44,7 @@ export function projekte (smoothScroll){
         delta.y = -60;
     }
     if(Math.abs(delta.y) > Math.abs(planesDeformations)) {
-        planesDeformations = lerp(planesDeformations, delta.y, 0.5);
+        planesDeformations = lerp(planesDeformations, delta.y, 0.1);
     }
   
     if(Math.abs(delta.y) > Math.abs(scrollEffect)) {
@@ -246,17 +246,17 @@ if(!useNativeScroll) {
                     ease: "power4.inOut"
                 });
 
-                gsap.to(".canvas_projekte_under", {
-                    opacity: 0,
-                    duration: 0,
-                    ease: "power4.inOut"
-                });
+                // gsap.to(".canvas_projekte_under", {
+                //     opacity: 0,
+                //     duration: 0,
+                //     ease: "power4.inOut"
+                // });
                 
-                gsap.to("canvas_proj", {
-                    opacity: 1,
-                    duration: 0.1,
-                    ease: "power4.inOut"
-                });
+                // gsap.to("canvas_proj", {
+                //     opacity: 1,
+                //     duration: 0.1,
+                //     ease: "power4.inOut"
+                // });
 
               
               
