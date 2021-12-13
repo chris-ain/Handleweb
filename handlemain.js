@@ -7,7 +7,7 @@ import { curtainsProjDet, curtainsDet } from "./curtainsdet.js";
 import { curtainsproundermain, curtainsprounder } from "./curtainprounder.js";
 import { trans } from "./menu.js";
 // import { sliderHome } from "./sliderNew.js"
-// import {slider, raf} from "./slider.js"
+import {slider, raf} from "./slider.js"
 
 // $(window).on('load', function(){
 //   $('.plane_img').each(function(){
@@ -21,13 +21,15 @@ import { trans } from "./menu.js";
 // });
 
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function(event) {
 gsap.registerPlugin(ScrollTrigger);
-gsap.set(".page_wrap",{ autoAlpha: 0,  });
+gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
 
 //MAIN//
 
   function init() {
+
+    
     var imagesLoaded = 0;
     const body = document.body;
     const select = (e) => document.querySelector(e);
@@ -57,7 +59,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
       const tl = gsap.timeline({
         defaults: {
           duration: 1,
-          ease: "power2.inOut",
+          // ease: "power2.inOut",
         },
       });
       tl.set(loaderInner, { autoAlpha: 0 })
@@ -74,7 +76,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
       const tl = gsap.timeline({
         defaults: {
           duration: 1,
-          ease: "power2.inOut",
+          // ease: "power2.inOut",
         },
         onComplete: () => initScript(),
       });
@@ -89,6 +91,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
       barba.hooks.before(() => {
 
         select("html").classList.add("is-transitioning");
+        
       });
 
       barba.hooks.after(() => {
@@ -115,7 +118,9 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
             namespace: "home",
 
             beforeEnter() {
-                   trans.out();	
+              setTimeout(function () {
+                trans.out();
+              },300)
               gsap.to(loader, {
                 opacity: 1,
                 duration: 0,
@@ -129,13 +134,18 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
                 function() {
                   curtainsmain(smoothScroll);
                   chessScene();
-                  gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+                  slider()
+                  gsap.to(".page_wrap",{ autoAlpha: 1, opacity:1, duration: 0, delay:1.7 });
 
              
                   setTimeout(function () {
                   trans.in();	
                   },2000);
-          
+                  gsap.to(".icon", {
+                    opacity: 0,
+                    delay:3,
+                    duration: 1,
+                  });
                
                 
                   // slider();
@@ -194,7 +204,9 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
           {
             namespace: "agentur",
             beforeEnter() {
-              trans.out();
+                    trans.out();
+                  
+             
             },
 
             afterEnter() {
@@ -202,12 +214,19 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
                 // options...
                 },
                 function() {
-             	
+                 
+
                   setTimeout(function () {
-                    gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+                    gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:1.3 });
+                    gsap.to(".icon", {opacity:0, delay: 3, duration: .5})
 
                   trans.in();	
                   },2000);
+                  gsap.to(".icon", {
+                    opacity: 0,
+                    delay:3,
+                    duration: 1,
+                  })
                   curtainsgenturfunc(smoothScroll);
                 }
               );
@@ -239,6 +258,11 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
                 setTimeout(function () {
                   trans.in();	
                   },2000);
+                  gsap.to(".icon", {
+                    opacity: 0,
+                    delay:3,
+                    duration: 1,
+                  })
                 gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
                 curtainsproundermain(smoothScroll);                      
               });
@@ -281,7 +305,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
                 setTimeout(function () {
                   trans.in();	
                   },2000);
-                  curtainsTransFunc(smoothScroll);
+                  curtainsTransFunc(smoothScroll)
                   curtainsProjDet(smoothScroll);  
 
                   setTimeout(function () {
@@ -303,7 +327,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0,  });
 
 
                     gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
-
+                    
                     const nexProjButton = document.querySelector('.next_proj')
                     nexProjButton.addEventListener('click',() => {
                       smoothScroll.stop();

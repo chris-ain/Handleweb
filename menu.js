@@ -3,7 +3,7 @@ import * as THREE from 'https://threejs.org/build/three.module.js';
 
 export var trans;
 var $hamburger = $('.button');
-gsap.set('.navwrapper',{opacity:0, yPercent:-100});  
+gsap.set('.navwrapper',{opacity:0, yPercent:-200});  
 gsap.set('.navitem',{opacity:0,});  
 gsap.set('.meta_menu',{opacity:0})
 // gsap.set('.main',{opacity:0})
@@ -50,7 +50,7 @@ class Transition {
 
 				gsap.timeline({
 					paused: true,
-					defaults: { duration: 1.25, delay:.3, ease: "power3.inOut",  },
+					defaults: { duration: 1.25, delay:.5, ease: "power3.inOut",  },
 				})
 
 					.to(
@@ -236,7 +236,7 @@ class Transition {
 		menuTl.to('.navwrapper', {yPercent: 0, duration:0, });
 
 			menuTl.to('.navwrapper', {opacity: 1, duration:1, });
-			menuTl.to('.navitem', {opacity: 1,  duration:.8, delay:0, stagger: .06,});
+			menuTl.to('.navitem', {opacity: 1,  duration:.8, delay:0, stagger: .1,});
 			menuTl.to('.meta_menu', {opacity:1, duration:1  });
 
 			menuTl.reverse();
@@ -248,10 +248,28 @@ class Transition {
 			this.reverse ? this.in() : this.out();
 
 		});
-
+	
 		$(".navitem").click(() => {			
-			menuTl.reversed(!menuTl.reversed());
+			menuTl.to('.navwrapper', {opacity: 0, duration:1, });
+			menuTl.to('.meta_menu', {opacity:0, duration:1  });
+			menuTl.to('.navwrapper',{opacity:0, yPercent:-200});  
+			let icon = document.querySelector('.icon path');
+			gsap.to(".intro_page", {
+				opacity: 1,
+				delay:.0,
+				duration: 1,
+			  });
+			icon.classList.remove('is-active');
 
+			setTimeout(function () {
+				icon.classList.add('is-active');
+			
+			}, 50);
+			gsap.to(".intro_page", {
+				opacity: 0,
+				delay:3,
+				duration: 1,
+			  });
 		});
 		var transLinks = document.querySelectorAll(".link_trans");
 
