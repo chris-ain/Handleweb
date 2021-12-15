@@ -1,5 +1,5 @@
  
-import * as THREE from 'https://threejs.org/build/three.module.js';
+// import * as THREE from 'https://threejs.org/build/three.module.js';
 import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
 import { FontLoader } from 'https://threejs.org/examples/jsm/loaders/FontLoader.js';
 var Composer;
@@ -141,7 +141,7 @@ const group = new THREE.Group();
 
 
 loader.load(
-  "https://raw.githubusercontent.com/chris-ain/handlefinal/main/chess_board_weiss.glb",
+  "https://raw.githubusercontent.com/chris-ain/handlefinal/main/chess_board21.glb",
   function (gltf) {
 
 
@@ -243,7 +243,7 @@ loader.load(
     renderer.setClearColor( 0x000000, 0 );
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.toneMappingExposure = 1;
+    renderer.toneMappingExposure = .6;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.shadowMap.enabled = true;
     renderer.physicallyCorrectLights;

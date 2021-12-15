@@ -95,7 +95,7 @@ if(!useNativeScroll) {
 
 
     // get our planes elements
-    var planeElements = document.getElementsByClassName("plane_test");
+    var planeElements = document.getElementsByClassName("plane");
 
     const vs = `
         precision mediump float;
@@ -730,14 +730,14 @@ if(!useNativeScroll) {
     
             // distort our image texture based on the flowmap values
             vec2 distortedCoords = vTextureCoord;
-            distortedCoords -= flowTexture.xy * 0.0000001;
+            distortedCoords -= flowTexture.xy * 0.01;
     
             // get our final texture based on the displaced coords
             vec4 texture = texture2D(uRenderTexture, distortedCoords);
             
-            vec4 rTexture = texture2D(uRenderTexture, distortedCoords + flowTexture.xy * 0.0000125);
+            vec4 rTexture = texture2D(uRenderTexture, distortedCoords + flowTexture.xy * 0.0125);
             vec4 gTexture = texture2D(uRenderTexture, distortedCoords);
-            vec4 bTexture = texture2D(uRenderTexture, distortedCoords - flowTexture.xy * 0.0000125);
+            vec4 bTexture = texture2D(uRenderTexture, distortedCoords - flowTexture.xy * 0.0125);
     
             // mix the BW image and the colored one based on our flowmap color values
             float mixValue = clamp((abs(flowTexture.r) + abs(flowTexture.g) + abs(flowTexture.b)) * 1.5, 0.0, 1.0);

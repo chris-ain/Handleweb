@@ -1,11 +1,12 @@
-    export var raf;
+
+
 
 import * as THREE from 'https://threejs.org/build/three.module.js';
-export function slider (){
-
+export function slider1 (){
+  var raf;
     var clientHeight = document.getElementById('clientHeight').clientHeight;
     console.log(clientHeight)
-    
+   const log = console.log;
     const store = {
       ww: window.innerWidth,
       wh: window.innerHeight,
@@ -34,10 +35,8 @@ export function slider (){
     
         this.ui = {
           items: this.el.querySelectorAll('.js-slide'),
-          titles: document.querySelectorAll('.js-title'),
-          tit: document.querySelectorAll('.js-title'),
 
-          lines: document.querySelectorAll('.js-progress-line') };
+        };
     
     
         this.state = {
@@ -112,12 +111,12 @@ export function slider (){
       setup(tit) {
         const { ww } = store;
         const state = this.state;
-        const { items, titles,  } = this.ui;
+        const { items,   } = this.ui;
         const {
           width: wrapWidth,
           left: wrapDiff } =
         this.el.getBoundingClientRect();
-    
+          console.log(wrapWidth)
         // Set bounding
         state.max = -(items[items.length - 1].getBoundingClientRect().right - wrapWidth - wrapDiff);
         state.min = 0;
@@ -130,23 +129,12 @@ export function slider (){
             ease: 'linear' } }).
     
     
-        fromTo('.js-progress-line-2', {
-          scaleX: 1 },
-        {
-          scaleX: 0,
-          duration: 0.5,
-          ease: 'power3' },
-        0).
+        
         fromTo('.tit', {
           xPercent: 0 },
         {
-          xPercent: -100 -(100/items.length +600)},
-        0).
-        fromTo('.js-progress-line', {
-          scaleX: 0 },
-        {
-          scaleX: 1 },
-        0);
+          xPercent: -100 -(100/(items.length -1 ) +480 )},
+        )
     
         // Cache stuff
         for (let i = 0; i < items.length; i++) {
@@ -176,19 +164,19 @@ export function slider (){
             tl,
             out: false });
     
-        }      console.log(items)
+        }      
       }
-
+    
       calc() {
         const state = this.state;
         state.current += (state.target - state.current) * this.opts.ease;
         state.currentRounded = Math.round(state.current * 100) / 100;
         state.diff = (state.target - state.current) * 0.0005;
-        state.progress = gsap.utils.wrap(0, 1, state.currentRounded / state.max);
+        state.progress = gsap.utils.wrap(0, 1, state.currentRounded / state.max );
     
         this.tl && this.tl.progress(state.progress);
-      }
-    
+      };
+   
       render() {
         this.calc();
         this.transformItems();
@@ -200,7 +188,6 @@ export function slider (){
         for (let i = 0; i < this.items.length; i++) {
           const item = this.items[i];
           const { translate, isVisible, progress } = this.isVisible(item);
-    
           item.plane.updateX(translate);
           item.plane.mat.uniforms.uVelo.value = this.state.diff;
     
@@ -215,13 +202,13 @@ export function slider (){
           }
         }
       }
-
+      
       isVisible({ left, right, width, min, max }) {
         const { ww } = store;
         const { currentRounded } = this.state;
         const translate = gsap.utils.wrap(min, max, currentRounded);
         const threshold = this.opts.threshold;
-        const start = left + translate;
+        const start = left  + translate;
         const end = right + translate;
         const isVisible = start < threshold + ww && end > -threshold;
         const progress = gsap.utils.clamp(0, 1, 1 - (translate + left + width) / (ww + width));
@@ -237,8 +224,8 @@ export function slider (){
         const state = this.state;
     
         state.target = gsap.utils.clamp(state.max, 0, state.target);
-      }
-    
+      };
+ 
       getPos({ changedTouches, clientX, clientY, target }) {
         const x = changedTouches ? changedTouches[0].clientX : clientX;
         const y = changedTouches ? changedTouches[0].clientY : clientY;
@@ -263,7 +250,30 @@ export function slider (){
         state.flags.dragging = false;
         state.off = state.target;
       }
+
+      
     
+
+      onWheel(e) {
+        // console.log(e);
+        const normalized = normalizeWheel(e);
+        const scrollDelta = normalized.pixelY * 0.2;
+        // console.log(scrollDelta);
+    
+        const { x, y } = this.getPos(e);
+        const state = this.state;
+    
+        state.flags.dragging = false;
+        const { off, on } = state;
+    
+        // move
+        state.target -= scrollDelta * this.opts.speed;
+    
+        // update on/off vals
+        on.x = state.target;
+        state.off = state.target;
+      }
+
       onMove(e) {
         const { x, y } = this.getPos(e);
         const state = this.state;
@@ -280,7 +290,9 @@ export function slider (){
         }
     
         state.target = off + moveX * this.opts.speed;
-      }}
+      }};
+
+
     
     
     /***/
@@ -356,7 +368,7 @@ export function slider (){
       gl_FragColor = tex;
     }
     `;
-    
+  
     const loader = new THREE.TextureLoader();
     loader.crossOrigin = 'anonymous';
     

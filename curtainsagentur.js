@@ -1,8 +1,7 @@
-export var curtainsAg;
-export var pl;
+var curtainsAg;
+let pl;
 
-
-export function curtainsgenturfunc (smoothScroll) {
+function curtainsgenturfunc (smoothScroll) {
   gsap.registerPlugin(ScrollTrigger);
 
     function lerp(start, end, amt) {
@@ -13,12 +12,12 @@ export function curtainsgenturfunc (smoothScroll) {
     const planes = [];
 
     // get our planes elements
-    const planeElements = document.getElementsByClassName("plane_test");
+    const planeElements = document.getElementsByClassName("plane");
     let scrollEffect = 0;
     var planesDeformations = 0;
     let useNativeScroll;
 
-    pl = planes;
+
     const curtainsAgentur = new Curtains({
       container: document.getElementById("canvastwo"),
       // premultipliedAlpha: true,
@@ -107,7 +106,7 @@ export function curtainsgenturfunc (smoothScroll) {
   void main() {
       vec3 vertexPosition = aVertexPosition;
       // cool effect on scroll
-      vertexPosition.y += sin(((vertexPosition.x + 1.0) / 2.0) * 3.141592) * (sin(uPlaneDeformation / 100.0));
+      vertexPosition.y += sin(((vertexPosition.x + 1.0) / 2.0) * 3.141592) * (sin(uPlaneDeformation / 200.0));
       gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition, 1.0);
       // varyings
       vVertexPosition = vertexPosition;
@@ -151,10 +150,11 @@ export function curtainsgenturfunc (smoothScroll) {
     // add our planes and handle them
     for (let i = 0; i < planeElements.length; i++) {
       const plane = new Plane(curtainsAgentur, planeElements[i], params);
-
+      pl = plane
       planes.push(plane);
 
       handlePlanes(i);
+      
     }
 
     // handle all the planes
@@ -194,9 +194,9 @@ export function curtainsgenturfunc (smoothScroll) {
   uniform float uScrollEffect;
   void main() {
       vec2 textureCoords = vTextureCoord;
-      vec2 redTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 400.0);
-      vec2 greenTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 3000.0);
-      vec2 blueTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 3000.0);
+      vec2 redTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 500.0);
+      vec2 greenTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 50000.0);
+      vec2 blueTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 50000.0);
       vec4 red = texture2D(uRenderTexture, redTextCoords);
       vec4 green = texture2D(uRenderTexture, greenTextCoords);
       vec4 blue = texture2D(uRenderTexture, blueTextCoords);
@@ -229,3 +229,12 @@ export function curtainsgenturfunc (smoothScroll) {
 
 
 }
+
+
+function destroyPlaneAg() {
+  for (let i = 0; i < curtainsAg.length; i++) {
+    curtainsAg[i].remove();   
+  }
+  curtainsAg = [];
+}
+export { curtainsAg, curtainsgenturfunc, destroyPlaneAg };

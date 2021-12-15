@@ -1,12 +1,8 @@
-export var curtainsTrans;
+var curtainsTrans;
+let planesTrans;
+let planes;
 
-    
-
-export function curtainsTransFunc(smoothScroll){
-
-
-     
-
+function curtainsTransFunc(smoothScroll){
 
    let useNativeScroll;
     let scrollEffect = 0;
@@ -22,9 +18,9 @@ export function curtainsTransFunc(smoothScroll){
     // set up our WebGL context and append the canvas to our wrapper
     curtainsTrans = new Curtains({
         container: document.getElementById("canvas_proj_trans"),
-        watchScroll: useNativeScroll, // watch scroll on mobile not on desktop since we're using locomotive scroll
-        pixelRatio: Math.min(1.5, window.devicePixelRatio), // limit pixel ratio for performance
-        autoRender: false, // use gsap ticker to render our scene
+        watchScroll: false,
+        pixelRatio: Math.min(1.5, window.devicePixelRatio), 
+        autoRender: false, 
     });
 
 
@@ -98,7 +94,7 @@ if(!useNativeScroll) {
     gsap.ticker.add(curtainsTrans.render.bind(curtainsTrans));
 
     // we will keep track of all our planes in an array
-    const planes = [];
+    planes = [];
 
 
     // get our planes elements
@@ -149,7 +145,6 @@ if(!useNativeScroll) {
             // apply it to our vertex position
             vertexPosition.z +=  distortionEffect * -transition;
             vertexPosition.x +=  (distortionEffect * transition * (uMousePosition.x - vertexPosition.x));
-            vertexPosition.y +=  distortionEffect * transition * (uMousePosition.y - vertexPosition.y);
 
 
     vertexPosition.y += sin(((vertexPosition.y * vertexPosition.x + 1.0) / 2.0) * 3.141592) * (sin(uPlaneDeformation / 1000000000.0))/1.3;
@@ -190,8 +185,8 @@ if(!useNativeScroll) {
         sampler: "uTexture",
         vertexShader: vs,
         fragmentShader: fs,
-        widthSegments: 10,
-        heightSegments: 10,
+        widthSegments: 20,
+        heightSegments: 20,
         autoloadSources: true,
         uniforms: {
             planeDeformation: {
@@ -248,10 +243,6 @@ if(!useNativeScroll) {
                     duration: 1.65,
                     ease: "power4.inOut"
                 });
-             
-
-              
-                
 
             });
 
@@ -487,14 +478,8 @@ if(!useNativeScroll) {
             });
             plane.setTransformOrigin(newTranslation);
             
- 
-            
-            
         }
     }
-
-
-
 
     /*** POST PROCESSING ***/
     // we'll be adding a flowmap rgb shift effect and fxaapass
@@ -661,7 +646,7 @@ if(!useNativeScroll) {
 
         // update velocity
         if(!updateVelocity) {
-            velocity.set(curtainsTrans.lerp(velocity.x, 0, 0.5), curtainsTrans.lerp(velocity.y, 0, 0.5));
+            velocity.set(curtainsTrans.lerp(velocity.x, 0, 0.5), curtainsTrans.lerp(velocity.y, 0, .5));
         }
         updateVelocity = false;
 
@@ -723,17 +708,17 @@ if(!useNativeScroll) {
     
             // distort our image texture based on the flowmap values
             vec2 distortedCoords = vTextureCoord;
-            distortedCoords -= flowTexture.xy * 0.0000001;
+            distortedCoords -= flowTexture.xy * 0.00000000005;
     
             // get our final texture based on the displaced coords
             vec4 texture = texture2D(uRenderTexture, distortedCoords);
             
-            vec4 rTexture = texture2D(uRenderTexture, distortedCoords + flowTexture.xy * 0.0000125);
-            vec4 gTexture = texture2D(uRenderTexture, distortedCoords);
-            vec4 bTexture = texture2D(uRenderTexture, distortedCoords - flowTexture.xy * 0.0000125);
+            vec4 rTexture = texture2D(uRenderTexture, distortedCoords + flowTexture.xy * 0.00125);
+            vec4 gTexture = texture2D(uRenderTexture, distortedCoords- flowTexture.xy * 0.00125);
+            vec4 bTexture = texture2D(uRenderTexture, distortedCoords - flowTexture.xy * 0.00125);
     
             // mix the BW image and the colored one based on our flowmap color values
-            float mixValue = clamp((abs(flowTexture.r) + abs(flowTexture.g) + abs(flowTexture.b)) * 1.5, 0.0, 1.0);
+            float mixValue = clamp((abs(flowTexture.r) + abs(flowTexture.g ) + abs(flowTexture.b)) * 1.0, 0.0, 1.0);
 
             texture = mix(texture, vec4(rTexture.r, gTexture.g, bTexture.b, texture.a), mixValue);
     
@@ -768,3 +753,11 @@ if(!useNativeScroll) {
     
 }
 
+
+function destroyPlaneTrans() {
+    for (let i = 0; i < planesTrans.length; i++) {
+      planesTrans[i].remove();   
+    }
+    planesTrans = [];
+  }
+  export { planesTrans, curtainsTransFunc, destroyPlaneTrans };

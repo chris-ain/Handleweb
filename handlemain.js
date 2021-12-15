@@ -1,24 +1,13 @@
 
-import { chessScene, id } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/chess.js";
-import { curtainsmain, curtains } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsmain.js";
-import { curtainsTrans, curtainsTransFunc } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsTrans.js";
-import { curtainsAg, pl, curtainsgenturfunc, } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsagentur.js";
-import { curtainsProjDet, curtainsDet } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsdet.js";
-import { curtainsproundermain, curtainsprounder } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainprounder.js";
-import { trans } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/menu.js";
-// import { sliderHome } from "./sliderNew.js"
-import {slider, raf} from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/slider.js"
+import { chessScene, id } from "./chess.js";
+import { curtainsmain, pl, destroyPlane } from "./curtainsmain.js";
+import { planesTrans, curtainsTransFunc, destroyPlaneTrans  } from "./curtainsTrans.js";
+import { curtainsAg, curtainsgenturfunc, destroyPlaneAg } from "./curtainsagentur.js";
+import { plDet, curtainsProjDet, destroyPlaneProjDet} from "./curtainsdet.js";
+import { curtainsprounder, curtainsproundermain, destroyPlaneproj  } from "./curtainprounder.js";
+import {slider1} from "./slider.js"
+import {menu, trans} from "./menu.js"
 
-// $(window).on('load', function(){
-//   $('.plane_img').each(function(){
-//       $(this).removeAttr('sizes');
-//       $(this).removeAttr('srcset');
-//   });
-//   $('.proj_img_home_wrap').each(function(){
-//     $(this).removeAttr('sizes');
-//     $(this).removeAttr('srcset');
-// });
-// });
 
 
 window.addEventListener("load", function(event) {
@@ -44,7 +33,6 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
     let smoothScroll;
 
     ////////BARBA INIT//////////
-    // gsap.set(pageWrap, { autoAlpha: 0 });
 
     // show loader on page load
     gsap.set(loader, { autoAlpha: 1 });
@@ -59,15 +47,12 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
       const tl = gsap.timeline({
         defaults: {
           duration: 1,
-          // ease: "power2.inOut",
         },
       });
       tl.set(loaderInner, { autoAlpha: 0 })
         .fromTo(loader, { yPercent: -100 }, { yPercent: 0 })
         .fromTo(loaderMask, { yPercent: 80 }, { yPercent: 0 }, 0)
-        
-      
-      // .to(container, { y: 150}, 0)
+
       return tl;
     }
 
@@ -76,14 +61,12 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
       const tl = gsap.timeline({
         defaults: {
           duration: 1,
-          // ease: "power2.inOut",
         },
         onComplete: () => initScript(),
       });
       
       tl.to(loader, { yPercent: 100 }).to(loaderMask, { yPercent: -80 }, 0);
     
-      // .from(container, { y: -150}, 0)
       return tl;
     }
 
@@ -107,8 +90,6 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
         window.scrollTo(0, 0);
       });
 
-      // barba.use(barbaPrefetch);
-
       /////////// VIEWS /////////////////////////
 
       barba.init({
@@ -120,11 +101,10 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
             beforeEnter() {
               setTimeout(function () {
                 trans.out();
-              },300)
-              gsap.to(loader, {
-                opacity: 1,
-                duration: 0,
-              });
+              },200)
+              setTimeout(function () {
+                trans.in();	
+                },2000);
             },
 
             afterEnter() { 
@@ -134,79 +114,39 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
                 function() {
                   curtainsmain(smoothScroll);
                   chessScene();
-                  slider()
+                  slider1()
                   gsap.to(".page_wrap",{ autoAlpha: 1, opacity:1, duration: 0, delay:1.7 });
 
-             
-                  setTimeout(function () {
-                  trans.in();	
-                  },2000);
                   gsap.to(".icon", {
                     opacity: 0,
                     delay:3,
                     duration: 1,
                   });
-               
-                
-                  // slider();
-                }
-              );
-        
-                // gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
 
-            // let pinWrap = document.querySelector(".pin-wrap");
-            //       let pinWrapWidth = pinWrap.offsetWidth;
-            //       let horizontalScrollLength = pinWrapWidth - window.innerWidth;
-                
-                  // Pinning and horizontal scrolling
-                
-                  // gsap.to(".pin-wrap", {
-                  //   scrollTrigger: {
-                  //     scroller: (".smooth-scroll"),
-                  //     scrub: true,
-                  //     trigger: "#sectionPin",
-                  //     pin: true,
-                  //     anticipatePin: 0,
-                  //     start: "top top",
-                  //     end: pinWrapWidth,
-                  //     ease: "none"
-                  //   },
-                  //   x: -horizontalScrollLength,
-                  //   ease: "none"
-                  // });
-                  // gsap.to(".chessCanvas", {
-                  //   scrollTrigger: {
-                  //     scroller: (".smooth-scroll"),
-                  //     scrub: true,
-                  //     trigger: ".smooth-scroll",
-                  //     start: "top top",
-                  //     end: "bottom -100"
-                  //   },
-                  //   opacity: 0,
-                  //   ease: "none"
-                  // });
-                 
-           
-            
-         
-        
+                }
+              );     
             },
 
             beforeLeave(data) {
               // gsap.ticker.remove(raf);
               cancelAnimationFrame( id );
-              curtains.clear();
-              curtains.dispose();
-
+              destroyPlane()
             },
           },
           /////////// AGENTUR /////////////////////////
           {
             namespace: "agentur",
             beforeEnter() {
-                    trans.out();
-                  
-             
+              setTimeout(function () {
+                if (trans.animating) {
+                  return
+                } else {
+                  trans.in();
+                }
+              
+              },200)
+         
+            
             },
 
             afterEnter() {
@@ -214,20 +154,10 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
                 // options...
                 },
                 function() {
-                 
-
-                  setTimeout(function () {
+                   curtainsgenturfunc(smoothScroll);
                     gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:1.3 });
-                    gsap.to(".icon", {opacity:0, delay: 3, duration: .5})
-
-                  trans.in();	
-                  },2000);
-                  gsap.to(".icon", {
-                    opacity: 0,
-                    delay:3,
-                    duration: 1,
-                  })
-                  curtainsgenturfunc(smoothScroll);
+           
+   
                 }
               );
        
@@ -235,21 +165,22 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
 
             beforeLeave(data) {
               setTimeout(function () {
-                curtainsAg.dispose();
-                curtainsAg.clear();
-   
-  
+                destroyPlaneAg()
               },1000);
-         
-           
+
             },
           },
           /////////// PROJEKTE /////////////////////////
           {
             namespace: "projekte",
             beforeEnter() {
-              trans.out();
-
+              setTimeout(function () {
+                if (trans.animating) {
+                  return
+                } else {
+                  trans.in();
+                }           
+              },200)
             },
 
             afterEnter() {
@@ -265,15 +196,14 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
                   })
                 gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
                 curtainsproundermain(smoothScroll);                      
-              });
-        
+              });  
             },
 
             beforeLeave(data) {
            
               setTimeout(function () {
-              // curtainsProj.dispose();
-              curtainsprounder.dispose();
+        
+                destroyPlaneproj()
  
 
             },1600);
@@ -283,20 +213,22 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
           {
             namespace: "projektdetail",
             beforeEnter() {
-          
-
-
+              setTimeout(function () {
+                if (trans.animating) {
+                  return
+                } else {
+                  trans.in();
+                }           
+              },200)
             },
-            afterEnter() {
-              
 
+            afterEnter() {
               gsap.set(".pro_in", {
                 opacity:0,
+                duration:.3
               
               })
 
-
-         
               $('#images').imagesLoaded()
               .always( function( instance ) {
                 console.log('all images loaded');
@@ -339,7 +271,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
                     })
 
                     const brandbutton = document.querySelector('#brand')
-                    brandbutton.addEventListener('click',() => {
+                    brandbutton.addEventListener('click',() => {w
                      
                       gsap.to("#fullscreen", {
                         opacity:1,
@@ -354,21 +286,13 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
                 console.log( 'image is ' + result + ' for ' + image.img.src );
               });
 
-
-            
-                // gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 })               
-                  
-
-
-
-          
             },
 
             beforeLeave(data) {
-              smoothScroll.stop();
+              // smoothScroll.stop();
 
               setTimeout(function () {    
-                curtainsDet.dispose();  
+                destroyPlaneProjDet();
               },2000);
             },
           },
@@ -377,12 +301,19 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
         {
           namespace: "jobs",
           beforeEnter() {
-            
+            setTimeout(function () {
+              if (trans.animating) {
+                return
+              } else {
+                trans.in();
+              }           
+            },200)
+
           },
           afterEnter() {
-            $(document).ready(function () {
+  
               gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
-            });
+
           },
 
           beforeLeave(data) {
@@ -394,11 +325,22 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
            {
             namespace: "kontakt",
             beforeEnter() {
+              setTimeout(function () {
+                if (trans.animating) {
+                  return
+                } else {
+                  trans.in();
+                }           
+              },200)
+
             },
             afterEnter() {
-              $(document).ready(function () {
+            
+                setTimeout(function () {
+                  trans.in();	
+                  });
                 gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
-              });
+           
   
             },
   
@@ -410,9 +352,42 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
            {
             namespace: "logofolio",
             beforeEnter() {
+              trans.out();
+
             },
             afterEnter() {
               $(document).ready(function () {
+
+                setTimeout(function () {
+                  trans.in();	
+                  },2000);
+                gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+              });
+  
+            },
+  
+            beforeLeave(data) {
+          
+            },
+          },
+           /////////// Sachverständiger /////////////////////////
+           {
+            namespace: "sachverständiger",
+            beforeEnter() {
+              setTimeout(function () {
+                if (trans.animating) {
+                  return
+                } else {
+                  trans.in();
+                }           
+              },200)
+
+            },
+            afterEnter() {
+              $(document).ready(function () {
+                setTimeout(function () {
+                  trans.in();	
+                  },2000);
                 gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
               });
   
@@ -423,14 +398,8 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
             },
           },
 
-        
-
 
         ],
-
-        
-
-      
 
         /////////// TRANSITIONS /////////////////////////
 
@@ -451,7 +420,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
               // animate loading screen in
 
             
-              trans.out();	
+
               
               await delay(2000);
 
@@ -459,6 +428,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
             },
             async enter(data) {
               // animate loading screen away
+              
             },
             
             async beforeEnter(data) {
@@ -483,8 +453,9 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
       smoothScroll = new LocomotiveScroll({
         el: document.getElementById("page-content"),
         smooth: true,
-        inertia: .6,
-        multiplier: 2,
+        inertia: .5,
+        multiplier: 1.5,
+        getDirection: true,
         mobile: {
           breakpoint: 0,
           smooth: true,
@@ -542,8 +513,6 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
     //////BARBA LOADER///////
 
     function initLoader() {
-      // trans.in()
-
   
       const tlLoaderIn = gsap.timeline({
         id: "tlLoaderIn",
@@ -559,14 +528,9 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
         
       });
 
-      
-      // trans.in()
 
-    
       tlLoaderIn
-  
 
-        //.set(loaderContent, {autoAlpha: 1})
         .to(loaderInner, {
           scaleY: 1,
           transformOrigin: "bottom",
@@ -583,15 +547,6 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
       });
 
       tlLoaderOut.to(loader, { yPercent: -100 }, 0.2);
-      // tlLoaderOut.from('.main', {y: 150}, 0.2);
-
-      // tlLoaderOut.from(".h1_chars_full", {
-      //  stagger:.05,opacity: 0, delay: 0,duration: .7, y:50, 
-      // })
-
-      // tlLoaderOut.to(".sub_hero", {
-      //  opacity: 1, duration: .7, y:50, delay:0
-      // })
 
       const tlLoader = gsap.timeline();
       tlLoader.add(tlLoaderIn).add(tlLoaderOut);

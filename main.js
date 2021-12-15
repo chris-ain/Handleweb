@@ -1,6 +1,5 @@
 
-
-
+let addAg, remAg;
 // set up our WebGL context and append the canvas to our wrapper
 const curtains = new Curtains({
     container: "canvas",
@@ -8,10 +7,7 @@ const curtains = new Curtains({
   });
   
   
-  let images = [
-  
-  ];
-  
+  let images = [];
   let textures = [];
   
   curtains.onError(() => {
@@ -133,7 +129,7 @@ const curtains = new Curtains({
     // add the right texture to the plane
     function assignTexture(plane) {
         // set the right texture
-        const planeImage = plane.htmlElement.querySelector("plane_test");
+        const planeImage = plane.htmlElement.querySelector("plane");
         const planeTexture = textures.find((element) => element.source && element.source.src === planeImage.src);
   
         // we got a texture that matches the plane img element, add it
@@ -177,8 +173,8 @@ const curtains = new Curtains({
     }
   
   
-    function addPlanes() {
-        planeElements = document.getElementsByClassName("plane_test");
+  addAg = function addPlanes() {
+        planeElements = document.getElementsByClassName("plane");
   
         // if we got planes to add
         if(planeElements.length > 0) {
@@ -197,7 +193,7 @@ const curtains = new Curtains({
         }
     }
   
-    function removePlanes() {
+   remAg = function removePlanes() {
         // remove all planes
         for(let i = 0; i < planes.length; i++) {
             planes[i].remove();
@@ -207,101 +203,8 @@ const curtains = new Curtains({
         planes = [];
     }
     console.log(planes)
-  
-    addPlanes();
-  
-  
-    // a flag to know if we are currently in a transition between pages
-    let isTransitioning = false;
-  
-    // handle all the navigation process
-    function handleNavigation() {
-  
-        // button navigation
-        const navButtons = document.getElementsByClassName("navitem");
-  
-        function buttonNavigation(e) {
-            // get button index
-            let index;
-            for(let i = 0; i < navButtons.length; i++) {
-                navButtons[i].classList.remove("active");
-                if(this === navButtons[i]) {
-                    index = i;
-                    navButtons[i].classList.add("active");
-                }
-            }
-  
-            // ajax call
-            // handleAjaxCall(navButtons[index].getAttribute("href"), appendContent);
-  
-            // prevent link default behaviour
-            // e.preventDefault();
-        }
-  
-        // listen to the navigation buttons click event
-        for(let i = 0; i < navButtons.length; i++) {
-            navButtons[i].addEventListener("click", buttonNavigation, false);
-        }
-  
-  
-  
-        // // this function will execute our AJAX call and run a callback function
-        // function handleAjaxCall(href, callback) {
-        //     // set our transition flag
-        //     isTransitioning = true;
-  
-        //     // handling ajax
-        //     const xhr = new XMLHttpRequest();
-  
-        //     xhr.onreadystatechange = function() {
-        //         if (xhr.readyState === 4 && (xhr.status === 200 || xhr.status === 0)) {
-  
-        //             const response = xhr.response;
-        //             callback(href, response);
-        //         }
-        //     };
-  
-        //     xhr.open("GET", href, true);
-        //     xhr.setRequestHeader("Accept", "text/html");
-        //     xhr.send(null);
-  
-        //     // start page transition
-        //     document.getElementById("page-content").classList.add("page-transition");
-        // }
-  
-        function appendContent(href, response) {
-            // append our response to a div
-            // const tempHtml = document.createElement('div');
-            // tempHtml.insertAdjacentHTML("beforeend", response);
-  
-            // let the css animation run
-            setTimeout(function() {
-  
-                removePlanes();
-  
-                let content;
-                // manual filtering to get our content
-                for(let i = 0; i < tempHtml.children.length; i++) {
-                    if(tempHtml.children[i].getAttribute("id") === "page-content") {
-  
-                        for(let j = 0; j < tempHtml.children[i].children.length; j++) {
-                            if(tempHtml.children[i].children[j].getAttribute("id") === "page-content") {
-                                content = tempHtml.children[i].children[j];
-                            }
-                        }
-                    }
-                }
-  
-               
-                addPlanes();
-  
-                // reset our transition flag
-                isTransitioning = false;
-  
-                // history.pushState(null, "", href);
-            }, 750);
-        }
-    }
-  
-    handleNavigation();
+
+
   });
+
+  export {curtains,remAg, addAg};

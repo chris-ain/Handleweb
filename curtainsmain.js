@@ -1,11 +1,9 @@
-export var curtains;
+var curtains;
 
+let pl;
 
-
-
-export function curtainsmain (smoothScroll) {
+function curtainsmain (smoothScroll) {
   $(document).ready(function () {
-
 
     function lerp(start, end, amt) {
         return (1 - amt) * start + amt * end * 0.5;
@@ -15,7 +13,7 @@ export function curtainsmain (smoothScroll) {
     const planes = [];
 
     // get our planes elements
-    const planeElements = document.getElementsByClassName("plane_test");
+    const planeElements = document.getElementsByClassName("plane");
     let scrollEffect = 0;
     var planesDeformations = 0;
     let useNativeScroll;
@@ -23,7 +21,7 @@ export function curtainsmain (smoothScroll) {
 
     curtains = new Curtains({
       container: document.getElementById("canvas"),
-      watchScroll: useNativeScroll, // watch scroll on mobile not on desktop since we're using locomotive scroll
+      watchScroll: false, // watch scroll on mobile not on desktop since we're using locomotive scroll
       pixelRatio: Math.min(50, window.devicePixelRatio), // limit pixel ratio for performance
       premultipliedAlpha: true,
     });
@@ -34,8 +32,6 @@ export function curtainsmain (smoothScroll) {
     curtains
       .onRender(() => {
         if (useNativeScroll) {
-          // update our planes deformation
-          // increase/decrease the effect
           planesDeformations = lerp(planesDeformations, 5, 0.075);
           scrollEffect = lerp(scrollEffect, 5, 0.075);
         }
@@ -77,7 +73,6 @@ export function curtainsmain (smoothScroll) {
 
     // custom scroll event
     if (!useNativeScroll) {
-      // we'll render only while lerping the scroll
       curtains.disableDrawing();
       smoothScroll.on("scroll", (obj) => {
         updateScroll(obj.scroll.x, obj.scroll.y);
@@ -162,16 +157,14 @@ export function curtainsmain (smoothScroll) {
     // add our planes and handle them
     for (let i = 0; i < planeElements.length; i++) {
       const plane = new Plane(curtains, planeElements[i], params);
-
       planes.push(plane);
-
       handlePlanes(i);
     }
 
     // handle all the planes
     function handlePlanes(index) {
       const plane = planes[index];
-
+      pl = planes[index]
       // check if our plane is defined and use it
       plane &&
         plane
@@ -198,29 +191,29 @@ export function curtainsmain (smoothScroll) {
     }
 
     var rgbFs = `
-  precision mediump float;
+    precision mediump float;
 
-  varying vec3 vVertexPosition;
-  varying vec2 vTextureCoord;
-
-  uniform sampler2D uRenderTexture;
-
-  uniform float uScrollEffect;
-
-  void main() {
-      vec2 textureCoords = vTextureCoord;
-
-      vec2 redTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 400.0);
-      vec2 greenTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 4000.0);
-      vec2 blueTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 4000.0);
-
-      vec4 red = texture2D(uRenderTexture, redTextCoords);
-      vec4 green = texture2D(uRenderTexture, greenTextCoords);
-      vec4 blue = texture2D(uRenderTexture, blueTextCoords);
-
-      vec4 finalColor = vec4(red.r, green.g, blue.b, min(1.0, red.a * green.a*blue.a));
-      gl_FragColor = finalColor;
-  }
+    varying vec3 vVertexPosition;
+    varying vec2 vTextureCoord;
+  
+    uniform sampler2D uRenderTexture;
+  
+    uniform float uScrollEffect;
+  
+    void main() {
+        vec2 textureCoords = vTextureCoord;
+  
+        vec2 redTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 400.0);
+        vec2 greenTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 3000.0);
+        vec2 blueTextCoords = vec2(vTextureCoord.x, vTextureCoord.y - uScrollEffect / 3000.0);
+  
+        vec4 red = texture2D(uRenderTexture, redTextCoords);
+        vec4 green = texture2D(uRenderTexture, greenTextCoords);
+        vec4 blue = texture2D(uRenderTexture, blueTextCoords);
+  
+        vec4 finalColor = vec4(red.r, green.g, blue.b, min(1.0, red.a * blue.a * green.a));
+        gl_FragColor = finalColor;
+    }
 `;
 
     var rgbTarget = new RenderTarget(curtains);
@@ -248,4 +241,12 @@ export function curtainsmain (smoothScroll) {
     
 }
 
+function destroyPlane() {
+  for (let i = 0; i < pl.length; i++) {
+    pl[i].remove();   
+  }
+  pl = [];
+}
 
+
+export { pl, curtainsmain, destroyPlane };

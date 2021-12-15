@@ -1,8 +1,9 @@
-export var curtainsprounder;
 
+var curtainsprounder;
 
+let planes;
 
-export function curtainsproundermain (smoothScroll) {
+function curtainsproundermain (smoothScroll) {
 
   var imagesLoaded = 0;
 
@@ -32,10 +33,10 @@ export function curtainsproundermain (smoothScroll) {
       }
 // CURTAINS
     // we will keep track of all our planes in an array
-    const planes = [];
+    planes = [];
 
     // get our planes elements
-    const planeElements = document.getElementsByClassName("plane_test");
+    const planeElements = document.getElementsByClassName("plane");
     let scrollEffect = 0;
     var planesDeformations = 0;
     let useNativeScroll;
@@ -132,7 +133,7 @@ export function curtainsproundermain (smoothScroll) {
       vec3 vertexPosition = aVertexPosition;
 
       // cool effect on scroll
-      vertexPosition.y += sin(((vertexPosition.x + 1.0) / 2.0) * 3.141592) * (sin(uPlaneDeformation / 100.0));
+      vertexPosition.y += sin(((vertexPosition.x + 1.0) / 2.0) * 3.141592) * (sin(uPlaneDeformation / 200.0));
 
       gl_Position = uPMatrix * uMVMatrix * vec4(vertexPosition, 1.0);
 
@@ -268,3 +269,11 @@ export function curtainsproundermain (smoothScroll) {
 }
 
 
+function destroyPlaneproj() {
+  for (let i = 0; i < planes.length; i++) {
+    planes[i].remove();   
+  }
+  planes = [];
+  console.log(planes)
+}
+export { curtainsprounder, curtainsproundermain, destroyPlaneproj };
