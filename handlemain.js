@@ -1,12 +1,12 @@
 
-import { chessScene, id } from "./chess.js";
-import { curtainsmain, pl, destroyPlane } from "./curtainsmain.js";
-import { planesTrans, curtainsTransFunc, destroyPlaneTrans  } from "./curtainsTrans.js";
-import { curtainsAg, curtainsgenturfunc, destroyPlaneAg } from "./curtainsagentur.js";
-import { plDet, curtainsProjDet, destroyPlaneProjDet} from "./curtainsdet.js";
-import { curtainsprounder, curtainsproundermain, destroyPlaneproj  } from "./curtainprounder.js";
-import {slider1} from "./slider.js"
-import {menu, trans} from "./menu.js"
+import { chessScene, id } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/chess.js";
+import { curtainsmain, pl, destroyPlane } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsmain.js";
+import { planesTrans, curtainsTransFunc, destroyPlaneTrans  } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsTrans.js";
+import { curtainsAg, curtainsgenturfunc, destroyPlaneAg } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsagentur.js";
+import { plDet, curtainsProjDet, destroyPlaneProjDet} from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainsdet.js";
+import { curtainsprounder, curtainsproundermain, destroyPlaneproj  } from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/curtainprounder.js";
+import {slider1} from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/slider.js"
+import {menu, trans} from "https://cdn.statically.io/gh/chris-ain/Handleweb/master/menu.js"
 
 
 
