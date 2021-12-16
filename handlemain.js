@@ -174,13 +174,28 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
           {
             namespace: "projekte",
             beforeEnter() {
-              setTimeout(function () {
-                if (trans.animating) {
-                  return
-                } else {
-                  trans.in();
-                }           
-              },200)
+              	const container = document.body
+
+    // Preload images
+    const preloadImages = () => {
+        return new Promise((resolve, reject) => {
+            imagesLoaded(document.querySelectorAll('img'), resolve);
+        });
+    };
+    // And then..
+    preloadImages().then(() => {
+        // Remove the loader
+        // document.body.classList.remove('loading');
+        if (trans.animating) {
+          return
+        } else {
+          trans.in();
+        }           
+   
+      
+	});
+             
+          
             },
 
             afterEnter() {
@@ -335,12 +350,7 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
 
             },
             afterEnter() {
-            
-                setTimeout(function () {
-                  trans.in();	
-                  });
-                gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
-           
+        
   
             },
   
@@ -398,8 +408,43 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
             },
           },
 
+            /////////// ProjHorizontal /////////////////////////
+            {
+              namespace: "proj",
+              beforeEnter() {
+                setTimeout(function () {
+                  if (trans.animating) {
+                    return
+                  } else {
+                    trans.in();
+                  }           
+                },200)
+  
+              },
+              afterEnter() {
+                $(document).ready(function () {
+                  setTimeout(function () {
+                    trans.in();	
+                    },2000);
+
+                    projfunc(smoothScroll);
+
+                  gsap.to(".page_wrap",{ autoAlpha: 1, duration: 1, delay:.5 });
+
+                 
+                });
+    
+              },
+    
+              beforeLeave(data) {
+            
+              },
+            },
+
 
         ],
+
+        
 
         /////////// TRANSITIONS /////////////////////////
 
@@ -450,12 +495,14 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
     }
 
     function initSmoothScroll(container) {
-      smoothScroll = new LocomotiveScroll({
-        el: document.getElementById("page-content"),
+
+      let options = {
+        el: document.querySelector('#page-content'),
         smooth: true,
+        getSpeed: true,
+        getDirection: true,
         inertia: .5,
         multiplier: 1.5,
-        getDirection: true,
         mobile: {
           breakpoint: 0,
           smooth: true,
@@ -464,7 +511,24 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
           breakpoint: 0,
           smooth: true,
         },
-      });
+    }
+  
+    if(document.querySelector('#page-content').getAttribute('data-horizontal') == 'true') {
+        options.direction = 'horizontal';
+        options.gestureDirection = 'both';
+        options.tablet = {
+            smooth: true,
+            direction: 'horizontal',
+            horizontalGesture: true
+        }
+   
+        options.reloadOnContextChange = true
+    }
+
+      smoothScroll = new LocomotiveScroll(options);
+
+
+    
       smoothScroll.on("scroll", ScrollTrigger.update);
 
       ScrollTrigger.scrollerProxy(".smooth-scroll", {
@@ -571,6 +635,11 @@ gsap.set(".page_wrap",{ autoAlpha: 0, opacity:0  });
   init();
 
   });
+
+
+
+
+
 
 
 
